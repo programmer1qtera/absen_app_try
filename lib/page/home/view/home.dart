@@ -1,8 +1,10 @@
 import 'package:absen_try_app/page/home/controller/home_controller.dart';
+import 'package:absen_try_app/page/kehadiran/view/kehadiran.dart';
 import 'package:absen_try_app/page/profile/view/profile_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -53,9 +55,9 @@ class HomeView extends GetView<HomeController> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
-                      Text(user?['position'] != null
-                          ? '${user?['position']['lat']}'
-                          : 'Jl Raya Bogor'),
+                      Text(user?['address'] != null
+                          ? '${user?['address']}'
+                          : 'Tidak Dijalan'),
                     ],
                   ),
                   SizedBox(
@@ -76,7 +78,9 @@ class HomeView extends GetView<HomeController> {
                           Text(
                             '${user?['nip']}',
                             style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.w500),
+                                fontSize: 24,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.amberAccent),
                           ),
                           Text('${user?['email']}')
                         ],
@@ -107,29 +111,89 @@ class HomeView extends GetView<HomeController> {
                   SizedBox(
                     height: 20,
                   ),
-                  ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: 3,
-                    itemBuilder: (context, index) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Masuk'),
-                          Text('${DateTime.now()}'),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text('Keluar'),
-                          Text('${DateTime.now()}'),
-                          SizedBox(
-                            height: 30,
-                          )
-                        ],
-                      );
-                    },
-                  )
+                  StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                      stream: controller.getKehadiran(),
+                      builder: (context, snapshotP) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        print(snapshot.data?.data());
+                        if (snapshotP.data?.docs.length == 0 ||
+                            snapshotP.data?.docs == null) {
+                          return Center(
+                            child: Text('Belum Ada Data Absen'),
+                          );
+                        }
+
+                        return ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: snapshotP.data?.docs.length,
+                          itemBuilder: (context, index) {
+                            var data = snapshotP.data!.docs[index].data();
+                            // var getDataItem = snapshot.data?.data();
+                            return Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(15),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                        height: 100,
+                                        width: double.infinity,
+                                        child: Image.network(
+                                          data['image'],
+                                          fit: BoxFit.cover,
+                                        )),
+                                    SizedBox(
+                                      height: 15,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          data['status'] == null
+                                              ? '-'
+                                              : '${data['status']}',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              color: data['status'] == 'Masuk'
+                                                  ? Colors.greenAccent
+                                                  : Colors.redAccent,
+                                              fontSize: 18),
+                                        ),
+                                        Text(
+                                          data['date'] == null
+                                              ? '-'
+                                              : '${DateFormat.Hms().format(DateTime.parse(data['date']))}',
+                                        )
+                                      ],
+                                    ),
+                                    Text(
+                                        '${DateFormat.yMMMEd().format(DateTime.parse(data['date']))}'),
+                                    Text('${data['address']}'),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    // Text('Keluar'),
+                                    // Text(data['keluar'] == null
+                                    //     ? '-'
+                                    //     : '${DateFormat.yMMMEd().add_Hms().format(DateTime.parse(data['keluar']['date']))}'),
+                                    // Text(data['keluar'] == null
+                                    //     ? '-'
+                                    //     : '${data['keluar']['address']}'),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      })
                 ],
               );
             } else {
@@ -138,7 +202,8 @@ class HomeView extends GetView<HomeController> {
           }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          controller.isAbsen();
+          // controller.isAbsen();
+          Get.to(KehadiranView());
         },
         child: Icon(Icons.person),
       ),
