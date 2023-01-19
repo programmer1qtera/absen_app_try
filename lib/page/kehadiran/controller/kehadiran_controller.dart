@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as s;
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
@@ -10,6 +11,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class KehadiranController extends GetxController {
+  TextEditingController placeC = TextEditingController();
+
   final ImagePicker _picker = ImagePicker();
   XFile? photo;
   final storage = s.FirebaseStorage.instance;
@@ -21,7 +24,7 @@ class KehadiranController extends GetxController {
 
   var itemAbsenLog = ['Masuk', 'Keluar'];
 
-  String? pilihan = 'chooos';
+  String? pilihan;
 
   void isPilihan(dynamic value) {
     pilihan = value;
@@ -45,30 +48,38 @@ class KehadiranController extends GetxController {
     isLoading = true;
     print('Absen');
     Map<String, dynamic> dataResponse = await determinePosition();
-    if (photo != null) {
-      if (dataResponse['error'] != true) {
-        Position position = dataResponse['position'];
-        List<Placemark> placemarks = await placemarkFromCoordinates(
-            position.latitude, position.longitude);
 
-        String addres = '${placemarks[0].street}, ${placemarks[0].subLocality}';
-        await updatePosition(position, addres);
-        print('$addres');
-        double jarak = Geolocator.distanceBetween(
-            -6.1636573, 106.8922156, position.latitude, position.longitude);
-        print(jarak);
-        await present(position, addres, jarak);
+    if (pilihan == null) {
+      Get.snackbar('Info', 'Silakan pilih kategori absen terlebih dahulu');
+    } else {
+      if (photo != null) {
+        if (dataResponse['error'] != true) {
+          Position position = dataResponse['position'];
+          List<Placemark> placemarks = await placemarkFromCoordinates(
+              position.latitude, position.longitude);
 
-        print('${position.latitude},${position.longitude}');
-        isLoading = false;
+          String addres =
+              '${placemarks[0].street}, ${placemarks[0].subLocality}';
+          await updatePosition(position, addres);
+          print('$addres');
+          double jarak = Geolocator.distanceBetween(
+              -6.1636573, 106.8922156, position.latitude, position.longitude);
+          print(jarak);
+          await present(position, addres, jarak);
+
+          print('${position.latitude},${position.longitude}');
+          Get.back();
+          isLoading = false;
+        } else {
+          Get.snackbar('Eror', dataResponse['message']);
+          isLoading = false;
+        }
       } else {
-        Get.snackbar('Eror', dataResponse['message']);
+        Get.snackbar('Error', 'Foto terlebih dahulu');
         isLoading = false;
       }
-    } else {
-      Get.snackbar('Error', 'Foto terlebih dahulu');
-      isLoading = false;
     }
+
     update();
   }
 
@@ -103,6 +114,7 @@ class KehadiranController extends GetxController {
       'date': now.toIso8601String(),
       'lat': position.latitude,
       'long': position.longitude,
+      'place': placeC.text,
       'address': addres,
       'image': urlImage,
       'status': pilihan

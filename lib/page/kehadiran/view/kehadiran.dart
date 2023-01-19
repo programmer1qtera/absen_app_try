@@ -31,7 +31,7 @@ class KehadiranView extends GetView<KehadiranController> {
               GetBuilder<KehadiranController>(builder: (c2) {
                 return Row(
                   children: [
-                    Text('${c2.pilihan}'),
+                    Text(c2.pilihan == null ? 'Pilih Absen' : '${c2.pilihan}'),
                     PopupMenuButton(
                       icon: Icon(Icons.arrow_drop_down),
                       onSelected: (value) {
@@ -64,6 +64,11 @@ class KehadiranView extends GetView<KehadiranController> {
                   controller.picImage();
                 },
                 child: Text('Ambil Gambar'),
+              ),
+              TextField(
+                controller: controller.placeC,
+                decoration: InputDecoration(
+                    hintText: 'Tepat Absen', border: OutlineInputBorder()),
               ),
               ElevatedButton(
                 onPressed: () {
