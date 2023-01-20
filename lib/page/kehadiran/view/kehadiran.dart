@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:absen_try_app/page/camera/camera_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -31,7 +32,15 @@ class KehadiranView extends GetView<KehadiranController> {
               GetBuilder<KehadiranController>(builder: (c2) {
                 return Row(
                   children: [
-                    Text(c2.pilihan == null ? 'Pilih Absen' : '${c2.pilihan}'),
+                    Text(
+                      c2.pilihan == null ? 'Pilih Absen' : '${c2.pilihan}',
+                      style: TextStyle(
+                          color: c2.pilihan == null
+                              ? Colors.white
+                              : c2.pilihan == 'Masuk'
+                                  ? Colors.greenAccent
+                                  : Colors.redAccent),
+                    ),
                     PopupMenuButton(
                       icon: Icon(Icons.arrow_drop_down),
                       onSelected: (value) {
@@ -52,23 +61,34 @@ class KehadiranView extends GetView<KehadiranController> {
               ),
               GetBuilder<KehadiranController>(builder: (c) {
                 if (c.photo != null) {
-                  return c.isLoading == true
-                      ? CircularProgressIndicator()
-                      : Image.file(File(c.photo!.path));
+                  return Container(
+                      height: 250,
+                      width: double.infinity,
+                      child: Image.file(
+                        c.finalImage,
+                        fit: BoxFit.cover,
+                      ));
                 } else {
                   return Container(height: 250, color: Colors.grey[800]);
                 }
               }),
               ElevatedButton(
                 onPressed: () {
+                  // Get.to(CameraPage());
+                  // controller.takePicture(context);
                   controller.picImage();
+                  // controller.drawTextOnImage();
                 },
                 child: Text('Ambil Gambar'),
               ),
               TextField(
                 controller: controller.placeC,
                 decoration: InputDecoration(
-                    hintText: 'Tepat Absen', border: OutlineInputBorder()),
+                    hintText: 'Nama Tempat Kunjungan',
+                    border: OutlineInputBorder()),
+              ),
+              SizedBox(
+                height: 30,
               ),
               ElevatedButton(
                 onPressed: () {

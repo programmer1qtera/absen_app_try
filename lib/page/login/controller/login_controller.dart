@@ -1,4 +1,5 @@
 import 'package:absen_try_app/page/home/view/home.dart';
+import 'package:absen_try_app/page/kehadiran/view/kehadiran.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';

@@ -1,4 +1,5 @@
 import 'package:absen_try_app/page/home/controller/home_controller.dart';
+import 'package:absen_try_app/page/izin/view/izin_view.dart';
 import 'package:absen_try_app/page/kehadiran/view/kehadiran.dart';
 import 'package:absen_try_app/page/profile/view/profile_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -68,21 +69,57 @@ class HomeView extends GetView<HomeController> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 15, vertical: 10),
-                      child: Column(
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('${user?['name']}'),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('${user?['name']}'),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                '${user?['nip']}',
+                                style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.amberAccent),
+                              ),
+                              Text('${user?['email']}')
+                            ],
+                          ),
                           SizedBox(
-                            height: 10,
+                            width: 30,
                           ),
-                          Text(
-                            '${user?['nip']}',
-                            style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.amberAccent),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Text('Izin Ke'),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                '-',
+                                style: TextStyle(fontSize: 24),
+                              ),
+                            ],
                           ),
-                          Text('${user?['email']}')
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Text('Sakit Ke'),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                '-',
+                                style: TextStyle(fontSize: 24),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -90,23 +127,71 @@ class HomeView extends GetView<HomeController> {
                   SizedBox(
                     height: 20,
                   ),
-                  Container(
-                    color: Colors.grey[800],
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Column(
                         children: [
-                          Column(
-                            children: [Text('Masuk'), Text('-')],
+                          InkWell(
+                            onTap: () {
+                              Get.to(KehadiranView());
+                            },
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundColor: Colors.blueAccent,
+                              child: Icon(
+                                Icons.calendar_today,
+                                color: Colors.black,
+                                size: 30,
+                              ),
+                            ),
                           ),
-                          Column(
-                            children: [Text('Keluar'), Text('-')],
-                          )
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text('Absen')
                         ],
                       ),
-                    ),
+                      Column(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Get.to(IzinView());
+                            },
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundColor: Colors.greenAccent,
+                              child: Icon(
+                                Icons.info_outline,
+                                color: Colors.black,
+                                size: 30,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text('Izin')
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          CircleAvatar(
+                            radius: 30,
+                            backgroundColor: Colors.redAccent,
+                            child: Icon(
+                              Icons.add,
+                              color: Colors.black,
+                              size: 30,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text('Sakit')
+                        ],
+                      ),
+                    ],
                   ),
                   SizedBox(
                     height: 20,
@@ -200,13 +285,6 @@ class HomeView extends GetView<HomeController> {
               return Text('Tidak Ada data');
             }
           }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // controller.isAbsen();
-          Get.to(KehadiranView());
-        },
-        child: Icon(Icons.person),
-      ),
     );
   }
 }

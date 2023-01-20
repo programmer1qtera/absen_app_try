@@ -1,9 +1,9 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as s;
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
@@ -16,12 +16,12 @@ class KehadiranController extends GetxController {
   final ImagePicker _picker = ImagePicker();
   XFile? photo;
   final storage = s.FirebaseStorage.instance;
-
+  var finalImage;
   FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   var isLoading = false;
-
+  // String textImg = 'Tes iamsnnahhhs';
   var itemAbsenLog = ['Masuk', 'Keluar'];
 
   String? pilihan;
@@ -31,14 +31,54 @@ class KehadiranController extends GetxController {
     update();
   }
 
+  // Future<File> drawTextOnImage() async {
+  //   photo = await _picker.pickImage(source: ImageSource.camera);
+
+  //   // var image = await photo.pickImage(source: ImageSource.camera);
+
+  //   var decodeImg = img.decodeImage(File(photo!.path).readAsBytesSync());
+
+  //   img.drawString(decodeImg!, DateTime.now().toString(), font: img.arial14);
+
+  //   var encodeImage = img.encodeJpg(decodeImg, quality: 100);
+
+  //   finalImage = File(photo!.path)..writeAsBytesSync(encodeImage);
+  //   print(finalImage);
+  //   // return finalImage;
+  // }
+
   void picImage() async {
-    isLoading = true;
-    photo = await _picker.pickImage(source: ImageSource.camera);
-    if (photo != null) {
-      isLoading = false;
-      print(photo?.name);
+    Map<String, dynamic> dataResponse = await determinePosition();
+
+    // Map<String, dynamic> dataResponse = await determinePosition();
+
+    if (dataResponse['error'] != true) {
+      Position position = dataResponse['position'];
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
+
+      print(placemarks);
+
+      String addres = '${placemarks[0].street}, ${placemarks[0].subLocality}';
+      print(addres);
+      photo = await _picker.pickImage(source: ImageSource.camera);
+      if (photo != null) {
+        var decodeImg = img.decodeImage(File(photo!.path).readAsBytesSync());
+        print(addres);
+        img.drawString(
+          decodeImg!,
+          addres,
+          font: img.arial48,
+        );
+
+        var encodeImage = img.encodeJpg(decodeImg);
+
+        finalImage = File(photo!.path)..writeAsBytesSync(encodeImage);
+      } else {
+        print(photo?.name);
+      }
     } else {
-      print(photo?.name);
+      Get.snackbar('Eror', dataResponse['message']);
     }
 
     update();
@@ -107,7 +147,7 @@ class KehadiranController extends GetxController {
       statusLoc = 'Di Qtera';
     }
 
-    await storage.ref('$name').putFile(file);
+    await storage.ref('$name').putFile(finalImage);
     String urlImage = await storage.ref('$name').getDownloadURL();
 
     await colKehadiran.doc().set({

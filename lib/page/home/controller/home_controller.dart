@@ -20,7 +20,6 @@ class HomeController extends GetxController {
         .collection('user')
         .doc(uid)
         .collection('kehadiran')
-        .orderBy('date')
         .snapshots();
   }
 }
