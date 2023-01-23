@@ -59,7 +59,8 @@ class KehadiranController extends GetxController {
 
       print(placemarks);
 
-      String addres = '${placemarks[0].street}, ${placemarks[0].subLocality}';
+      String addres =
+          '${placemarks[1].thoroughfare}, ${placemarks[0].subLocality}';
       print(addres);
       photo = await _picker.pickImage(source: ImageSource.camera);
       if (photo != null) {
@@ -99,7 +100,7 @@ class KehadiranController extends GetxController {
               position.latitude, position.longitude);
 
           String addres =
-              '${placemarks[0].street}, ${placemarks[0].subLocality}';
+              '${placemarks[0].thoroughfare}, ${placemarks[0].subLocality}';
           await updatePosition(position, addres);
           print('$addres');
           double jarak = Geolocator.distanceBetween(
@@ -107,8 +108,9 @@ class KehadiranController extends GetxController {
           print(jarak);
           await present(position, addres, jarak);
 
-          print('${position.latitude},${position.longitude}');
-          Get.back();
+          print('last ${position.latitude},${position.longitude}');
+          Get.snackbar('Berhasi Masuk', 'Anda berhasil absen Masuk');
+
           isLoading = false;
         } else {
           Get.snackbar('Eror', dataResponse['message']);
@@ -160,6 +162,7 @@ class KehadiranController extends GetxController {
       'status': pilihan
     });
     Get.snackbar('Berhasi Masuk', 'Anda berhasil absen Masuk');
+    Get.back();
 
     // print(getKehadiran.docs.length);
 

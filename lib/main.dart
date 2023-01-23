@@ -1,6 +1,8 @@
 import 'package:absen_try_app/page/home/view/home.dart';
+import 'package:absen_try_app/page/izin/view/izin_view.dart';
 import 'package:absen_try_app/page/kehadiran/view/kehadiran.dart';
 import 'package:absen_try_app/page/login/view/login_view.dart';
+import 'package:absen_try_app/page/maps/maps_view.dart';
 import 'package:absen_try_app/page/watermark_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
