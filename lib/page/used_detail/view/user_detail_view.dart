@@ -4,6 +4,7 @@ import 'package:absen_try_app/page/izin/view/izin_view.dart';
 import 'package:absen_try_app/page/kehadiran/view/kehadiran.dart';
 import 'package:absen_try_app/page/profile/view/profile_view.dart';
 import 'package:absen_try_app/page/sakit/view/sakit_page.dart';
+import 'package:absen_try_app/page/used_detail/controller/user_detail_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,15 +12,16 @@ import 'package:intl/intl.dart';
 
 import '../../maps/maps_view.dart';
 
-class HomeView extends GetView<HomeController> {
-  const HomeView({super.key});
+class UserDetail extends GetView<UserDetailController> {
+  UserModel userDetailMod;
+  UserDetail({required this.userDetailMod, super.key});
 
   @override
   Widget build(BuildContext context) {
-    var controller = Get.put(HomeController());
+    var controller = Get.put(UserDetailController());
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text('Detail User'),
         actions: [
           IconButton(
               onPressed: () {
@@ -29,7 +31,7 @@ class HomeView extends GetView<HomeController> {
         ],
       ),
       body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-          stream: controller.streamHome(),
+          stream: controller.streamHome(userDetailMod.id),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               Center(
@@ -44,20 +46,6 @@ class HomeView extends GetView<HomeController> {
                   padding: const EdgeInsets.all(10),
                   child: Column(
                     children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'welcome ${userMod.id}',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
-                          ),
-                          Text(userMod.address != null
-                              ? '${userMod.address}'
-                              : 'Lokasi tidak di temukan'),
-                        ],
-                      ),
                       SizedBox(
                         height: 20,
                       ),
@@ -92,6 +80,49 @@ class HomeView extends GetView<HomeController> {
                               SizedBox(
                                 width: 30,
                               ),
+                              StreamBuilder<
+                                      QuerySnapshot<Map<String, dynamic>>>(
+                                  stream: controller.getIzin(userDetailMod.id),
+                                  builder: (context, snapshot) {
+                                    return Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text('Izin Ke'),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          snapshot.data?.docs.length == 0
+                                              ? '-'
+                                              : '${snapshot.data?.docs.length}',
+                                          style: TextStyle(fontSize: 24),
+                                        ),
+                                      ],
+                                    );
+                                  }),
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('Sakit Ke'),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  StreamBuilder<
+                                          QuerySnapshot<Map<String, dynamic>>>(
+                                      stream:
+                                          controller.getSakit(userDetailMod.id),
+                                      builder: (context, snapshot) {
+                                        return Text(
+                                          snapshot.data?.docs.length == 0
+                                              ? '-'
+                                              : '${snapshot.data?.docs.length}',
+                                          style: TextStyle(fontSize: 24),
+                                        );
+                                      }),
+                                ],
+                              ),
                             ],
                           ),
                         ),
@@ -99,81 +130,10 @@ class HomeView extends GetView<HomeController> {
                       SizedBox(
                         height: 20,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Column(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  Get.to(KehadiranView());
-                                },
-                                child: CircleAvatar(
-                                  radius: 30,
-                                  backgroundColor: Colors.blueAccent,
-                                  child: Icon(
-                                    Icons.calendar_today,
-                                    color: Colors.black,
-                                    size: 30,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Text('Absen')
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  Get.to(IzinView());
-                                },
-                                child: CircleAvatar(
-                                  radius: 30,
-                                  backgroundColor: Colors.greenAccent,
-                                  child: Icon(
-                                    Icons.info_outline,
-                                    color: Colors.black,
-                                    size: 30,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Text('Izin')
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  Get.to(SakitView());
-                                },
-                                child: CircleAvatar(
-                                  radius: 30,
-                                  backgroundColor: Colors.redAccent,
-                                  child: Icon(
-                                    Icons.add,
-                                    color: Colors.black,
-                                    size: 30,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Text('Sakit')
-                            ],
-                          ),
-                        ],
-                      ),
                       SizedBox(
                         height: 30,
                       ),
-                      GetBuilder<HomeController>(builder: (c) {
+                      GetBuilder<UserDetailController>(builder: (c) {
                         return Column(
                           children: [
                             Row(
@@ -193,7 +153,8 @@ class HomeView extends GetView<HomeController> {
                                   )
                                 : StreamBuilder<
                                         QuerySnapshot<Map<String, dynamic>>>(
-                                    stream: controller.getKehadiran(),
+                                    stream: controller
+                                        .getKehadiran(userDetailMod.id),
                                     builder: (context, snapshotP) {
                                       if (snapshot.connectionState ==
                                           ConnectionState.waiting) {
@@ -230,7 +191,7 @@ class HomeView extends GetView<HomeController> {
                                                       height: 100,
                                                       width: double.infinity,
                                                       child:
-                                                          //  Center(
+                                                          // Center(
                                                           //   child: Text(
                                                           //       'Limit Firebase load image'),
                                                           // ),
@@ -284,6 +245,25 @@ class HomeView extends GetView<HomeController> {
                                                   SizedBox(
                                                     height: 8,
                                                   ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.end,
+                                                    children: [
+                                                      InkWell(
+                                                          onTap: () {
+                                                            showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (context) =>
+                                                                      MapsView(
+                                                                data: data,
+                                                              ),
+                                                            );
+                                                          },
+                                                          child: Icon(Icons
+                                                              .location_history)),
+                                                    ],
+                                                  )
 
                                                   // Text('Keluar'),
                                                   // Text(data['keluar'] == null
@@ -314,7 +294,7 @@ class HomeView extends GetView<HomeController> {
                         height: 10,
                       ),
                       StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                          stream: controller.getIzin(),
+                          stream: controller.getIzin(userDetailMod.id),
                           builder: (context, snapshotI) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
@@ -370,12 +350,12 @@ class HomeView extends GetView<HomeController> {
                                         Text(
                                           '${DateFormat.yMMMEd().format(DateTime.parse(dataIzin['date']))}',
                                           style: TextStyle(
-                                              color: Colors.grey[300]),
+                                              color: Colors.grey[400]),
                                         ),
                                         Text(
                                           '${dataIzin['address']}',
                                           style: TextStyle(
-                                              color: Colors.grey[600]),
+                                              color: Colors.grey[400]),
                                         ),
                                         SizedBox(
                                           height: 10,
@@ -416,7 +396,7 @@ class HomeView extends GetView<HomeController> {
                         height: 10,
                       ),
                       StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                          stream: controller.getSakit(userMod.id),
+                          stream: controller.getSakit(userDetailMod.id),
                           builder: (context, snapshotI) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {

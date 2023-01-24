@@ -4,12 +4,19 @@ import 'package:latlong2/latlong.dart';
 
 class MapsView extends StatelessWidget {
   dynamic data;
-  MapsView({required this.data ,super.key});
+  MapsView({required this.data, super.key});
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      elevation: 0,
+      backgroundColor: Colors.transparent,
       child: Container(
+        decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(10)),
         height: 300,
         child: FlutterMap(
           options: MapOptions(
@@ -32,7 +39,7 @@ class MapsView extends StatelessWidget {
                 Marker(
                   point: LatLng(data['lat'], data['long']),
                   builder: (context) => Icon(
-                    Icons.pin_drop,
+                    Icons.location_on,
                     size: 35,
                     color: Colors.black,
                   ),

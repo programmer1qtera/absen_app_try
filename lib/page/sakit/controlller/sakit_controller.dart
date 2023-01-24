@@ -11,7 +11,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as s;
 import 'package:intl/intl.dart';
 
-class IzinController extends GetxController {
+class SakitController extends GetxController {
   TextEditingController controllerDesc = TextEditingController();
   FirebaseAuth auth = FirebaseAuth.instance;
   final storage = s.FirebaseStorage.instance;
@@ -31,7 +31,7 @@ class IzinController extends GetxController {
     }
   }
 
-  void isIzin() async {
+  void isSakit() async {
     print('Izin');
     Map<String, dynamic> dataResponse = await determinePosition();
 
@@ -64,7 +64,7 @@ class IzinController extends GetxController {
   Future<dynamic> present(Position position, String addres) async {
     String uid = await auth.currentUser!.uid;
     CollectionReference<Map<String, dynamic>> colKehadiran =
-        await firestore.collection('user').doc(uid).collection('izin');
+        await firestore.collection('user').doc(uid).collection('sakit');
 
     // QuerySnapshot<Map<String, dynamic>> getKehadiran = await colKehadiran.get();
 

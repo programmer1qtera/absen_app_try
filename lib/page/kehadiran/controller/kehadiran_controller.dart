@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:absen_try_app/page/home/view/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as s;
@@ -60,9 +61,10 @@ class KehadiranController extends GetxController {
       print(placemarks);
 
       String addres =
-          '${placemarks[1].thoroughfare}, ${placemarks[0].subLocality}';
+          '${placemarks[0].thoroughfare}, ${placemarks[0].subLocality}';
       print(addres);
-      photo = await _picker.pickImage(source: ImageSource.camera);
+      photo =
+          await _picker.pickImage(imageQuality: 50, source: ImageSource.camera);
       if (photo != null) {
         var decodeImg = img.decodeImage(File(photo!.path).readAsBytesSync());
         print(addres);
@@ -162,7 +164,7 @@ class KehadiranController extends GetxController {
       'status': pilihan
     });
     Get.snackbar('Berhasi Masuk', 'Anda berhasil absen Masuk');
-    Get.back();
+    Get.to(HomeView());
 
     // print(getKehadiran.docs.length);
 
