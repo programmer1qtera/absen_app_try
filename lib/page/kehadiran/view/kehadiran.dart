@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:absen_try_app/page/camera/camera_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -12,6 +9,9 @@ class KehadiranView extends GetView<KehadiranController> {
   @override
   Widget build(BuildContext context) {
     var controller = Get.put(KehadiranController());
+    controller.pilihan = null;
+    controller.photo = null;
+    controller.placeC.text == '';
 
     return Scaffold(
         appBar: AppBar(

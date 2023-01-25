@@ -34,7 +34,7 @@ class UserDetailController extends GetxController {
     yield* firestore
         .collection('user')
         .doc(idParams)
-        .collection('izin')
+        .collection('cuti')
         .snapshots();
   }
 

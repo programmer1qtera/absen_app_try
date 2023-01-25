@@ -16,6 +16,8 @@ class SakitController extends GetxController {
   FirebaseAuth auth = FirebaseAuth.instance;
   final storage = s.FirebaseStorage.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  String? getDateTime;
   File? file;
   String? fileName;
 
@@ -31,31 +33,80 @@ class SakitController extends GetxController {
     }
   }
 
-  void isSakit() async {
-    print('Izin');
-    Map<String, dynamic> dataResponse = await determinePosition();
+  void getCalender(context) async {
+    var date = DateTime.now();
+    final birthday = DateTime(date.year, date.month, date.day - 2);
 
-    if (file != null) {
-      if (dataResponse['error'] != true) {
-        Position position = dataResponse['position'];
-        List<Placemark> placemarks = await placemarkFromCoordinates(
-            position.latitude, position.longitude);
+    DateTime? getNewDate = await showDatePicker(
+        helpText: 'Qtera Calender ',
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: birthday,
+        lastDate: DateTime.now());
 
-        String addres =
-            '${placemarks[0].thoroughfare}, ${placemarks[0].subLocality}';
-        await updatePosition(position, addres);
-        print('$addres');
-        // double jarak = Geolocator.distanceBetween(
-        //     -6.1636573, 106.8922156, position.latitude, position.longitude);
-        // print(jarak);
-        await present(position, addres);
-
-        print('${position.latitude},${position.longitude}');
+    if (getNewDate != null) {
+      String getDay = DateFormat.EEEE().format(getNewDate);
+      if (getDay == 'Saturday' || getDay == 'Sunday') {
+        if (getDay == 'Saturday') {
+          String indDaya = 'Sabtu';
+          Get.snackbar(
+              'Hari Libur', 'Anda yakin izin sakit di hari $indDaya ?');
+        } else {
+          String indDaya = 'Minggu';
+          Get.snackbar(
+              'Hari Libur', 'Anda yakin izin sakit di hari $indDaya ?');
+        }
+        getDateTime = null;
+        getNewDate = null;
+        update();
       } else {
-        Get.snackbar('Eror', dataResponse['message']);
+        getDateTime = DateFormat.yMMMMEEEEd().format(getNewDate);
+        update();
       }
     } else {
-      Get.snackbar('Error', 'file belum di upload');
+      getDateTime = null;
+      getNewDate = null;
+      update();
+    }
+
+    //     .then((value) {
+    //   dateTime = value;
+    //   dateTime == null
+    //       ? null
+    //       : getDateTime = DateFormat.yMd().format(dateTime!);
+
+    //   update();
+    // });
+  }
+
+  void isSakit() async {
+    print('Sakit');
+    Map<String, dynamic> dataResponse = await determinePosition();
+    if (getDateTime != null) {
+      if (file != null) {
+        if (dataResponse['error'] != true) {
+          Position position = dataResponse['position'];
+          List<Placemark> placemarks = await placemarkFromCoordinates(
+              position.latitude, position.longitude);
+
+          String addres =
+              '${placemarks[0].thoroughfare}, ${placemarks[0].subLocality}';
+          await updatePosition(position, addres);
+          print('$addres');
+          // double jarak = Geolocator.distanceBetween(
+          //     -6.1636573, 106.8922156, position.latitude, position.longitude);
+          // print(jarak);
+          await present(position, addres);
+
+          print('${position.latitude},${position.longitude}');
+        } else {
+          Get.snackbar('Eror', dataResponse['message']);
+        }
+      } else {
+        Get.snackbar('Error', 'file belum di upload');
+      }
+    } else {
+      Get.snackbar('Tanggal Diisi', 'Tanggal Harus Di isi');
     }
 
     update();
@@ -82,9 +133,11 @@ class SakitController extends GetxController {
     // String filePDF = await storage.ref('$fileName').getDownloadURL();
 
     await colKehadiran.doc().set({
+      'satus': 'sakit',
       'date': now.toIso8601String(),
       'lat': position.latitude,
       'long': position.longitude,
+      'tanggal_pengajuan_sakit': getDateTime,
       'description': controllerDesc.text,
       'address': addres,
       'nameFile': fileName,

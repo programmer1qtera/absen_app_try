@@ -11,11 +11,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as s;
 import 'package:intl/intl.dart';
 
-class IzinController extends GetxController {
+class CutiController extends GetxController {
   TextEditingController controllerDesc = TextEditingController();
   FirebaseAuth auth = FirebaseAuth.instance;
   final storage = s.FirebaseStorage.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  String? getDateTime;
+  // DateTime now = DateTime.now();
+
   File? file;
   String? fileName;
 
@@ -32,30 +35,33 @@ class IzinController extends GetxController {
   }
 
   void isIzin() async {
-    print('Izin');
+    print('Cuti');
     Map<String, dynamic> dataResponse = await determinePosition();
-
-    if (file != null) {
-      if (dataResponse['error'] != true) {
-        Position position = dataResponse['position'];
-        List<Placemark> placemarks = await placemarkFromCoordinates(
-            position.latitude, position.longitude);
-
-        String addres =
-            '${placemarks[0].thoroughfare}, ${placemarks[0].subLocality}';
-        await updatePosition(position, addres);
-        print('$addres');
-        // double jarak = Geolocator.distanceBetween(
-        //     -6.1636573, 106.8922156, position.latitude, position.longitude);
-        // print(jarak);
-        await present(position, addres);
-
-        print('${position.latitude},${position.longitude}');
-      } else {
-        Get.snackbar('Eror', dataResponse['message']);
-      }
+    if (getDateTime == null) {
+      Get.snackbar('Tanggal Kosong', 'Tanggal harus di isi');
     } else {
-      Get.snackbar('Error', 'file belum di upload');
+      if (file != null) {
+        if (dataResponse['error'] != true) {
+          Position position = dataResponse['position'];
+          List<Placemark> placemarks = await placemarkFromCoordinates(
+              position.latitude, position.longitude);
+
+          String addres =
+              '${placemarks[0].thoroughfare}, ${placemarks[0].subLocality}';
+          await updatePosition(position, addres);
+          print('$addres');
+          // double jarak = Geolocator.distanceBetween(
+          //     -6.1636573, 106.8922156, position.latitude, position.longitude);
+          // print(jarak);
+          await present(position, addres);
+
+          print('${position.latitude},${position.longitude}');
+        } else {
+          Get.snackbar('Eror', dataResponse['message']);
+        }
+      } else {
+        Get.snackbar('Error', 'file belum di upload');
+      }
     }
 
     update();
@@ -64,7 +70,7 @@ class IzinController extends GetxController {
   Future<dynamic> present(Position position, String addres) async {
     String uid = await auth.currentUser!.uid;
     CollectionReference<Map<String, dynamic>> colKehadiran =
-        await firestore.collection('user').doc(uid).collection('izin');
+        await firestore.collection('user').doc(uid).collection('cuti');
 
     // QuerySnapshot<Map<String, dynamic>> getKehadiran = await colKehadiran.get();
 
@@ -82,10 +88,12 @@ class IzinController extends GetxController {
     // String filePDF = await storage.ref('$fileName').getDownloadURL();
 
     await colKehadiran.doc().set({
+      'satus': 'cuti',
       'date': now.toIso8601String(),
       'lat': position.latitude,
       'long': position.longitude,
       'description': controllerDesc.text,
+      'tanggal_cuti': getDateTime,
       'address': addres,
       'nameFile': fileName,
       // 'file': filePDF,
@@ -157,5 +165,98 @@ class IzinController extends GetxController {
       },
       'address': addres
     });
+  }
+
+  void getCalender(context) async {
+    // TimeOfDay now = TimeOfDay.now();
+    // const TimeOfDay releaseTime = TimeOfDay(hour: 15, minute: 0); // 3:00pm
+    // TimeOfDay roomBooked =
+    //     TimeOfDay.fromDateTime(DateTime.parse('2018-10-20 16:30:04Z'));
+    // print(releaseTime);
+    // print(roomBooked);
+    DateTime date = DateTime.now();
+    DateTime firstDayPic = DateTime(date.year, date.month, date.day + 6);
+    DateTime? newDate = await showDatePicker(
+        helpText: 'Qtera Calender ',
+        context: context,
+        initialEntryMode: DatePickerEntryMode.calendarOnly,
+        // selectableDayPredicate: ,
+        initialDate: DateTime.now(),
+        firstDate: date,
+        lastDate: firstDayPic);
+    if (newDate != null) {
+      //  dateTime = newDate;
+      String timeDay = DateFormat.EEEE().format(newDate);
+      print(timeDay);
+      if (timeDay == 'Saturday' || timeDay == 'Sunday') {
+        if (timeDay == 'Saturday') {
+          String indDaya = 'Sabtu';
+          Get.snackbar('Hari Libur', 'Anda yakin cuti di hari $indDaya ?');
+        } else {
+          String indDaya = 'Minggu';
+          Get.snackbar('Hari Libur', 'Anda yakin cuti di hari $indDaya ?');
+        }
+        newDate = null;
+        getDateTime = null;
+        update();
+      } else {
+        print(newDate);
+        getDateTime = DateFormat.yMMMMEEEEd().format(newDate);
+        update();
+      }
+    } else {
+      newDate = null;
+      getDateTime = null;
+      update();
+    }
+    //     .then((value) {
+    //   dateTime = value;
+    //   dateTime == null
+    //       ? null
+    //       : getDateTime = DateFormat.yMd().format(dateTime!);
+
+    //   update();
+    // });
+  }
+
+  void keterlambatan() {
+    // TimeOfDay now = TimeOfDay.now();
+    // TimeOfDay releaseTime = TimeOfDay(hour: 08, minute: 30);
+
+    DateTime dateNow = DateTime.now();
+    DateTime batasWaktu =
+        DateTime(dateNow.year, dateNow.month, dateNow.day, 08, 30);
+    print('batas waktu: $batasWaktu');
+    if (dateNow.hour > batasWaktu.hour) {
+      DateTime rangeTime = DateTime(
+          dateNow.year,
+          dateNow.month,
+          dateNow.day,
+          dateNow.hour > 08 ? dateNow.hour - 08 : 08 - dateNow.hour,
+          dateNow.minute > 08 ? dateNow.minute - 30 : 30 - dateNow.minute);
+      print(' Lama keterlambatan ${DateFormat.Hm().format(rangeTime)}');
+      print('Terlambat');
+    } else {
+      print('tidak terlambat');
+    }
+
+    // print(now);
+    // print(releaseTime);
+
+    // if (now.hour > releaseTime.hour) {
+    //   TimeOfDay rangeKeterlambatan = TimeOfDay(
+    //       hour: now.hour - 08,
+    //       minute: now.minute > 30 ? now.minute - 30 : 30 - now.minute);
+    //   print(' Lama keterlambatan $rangeKeterlambatan');
+    //   print('Terlambat');
+    // } else {
+    //   print('tidak terlambat');
+    // }
+    //   int daysBetween(TimeOfDay from, TimeOfDay to) {
+    //    from = TimeOfDay( hour: from.hour,minute: from.minute,);
+    //    to = TimeOfDay(hour: to.hour, minute: to.hour);
+    //  return (to.difference(from).inHours / 24).round();
+    // }
+    //  final difference = daysBetween(now, releaseTime);
   }
 }

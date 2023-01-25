@@ -2,10 +2,7 @@ import 'package:absen_try_app/model/user_model.dart';
 import 'package:absen_try_app/page/used_detail/view/user_detail_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:get/get.dart';
-
 import '../controller/admin_ controler.dart';
 
 class AdminView extends GetView<AdminController> {

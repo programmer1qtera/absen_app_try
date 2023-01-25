@@ -87,6 +87,25 @@ class KehadiranController extends GetxController {
     update();
   }
 
+  void keterlambatan() {
+    DateTime dateNow = DateTime.now();
+    DateTime batasWaktu =
+        DateTime(dateNow.year, dateNow.month, dateNow.day, 08, 30);
+    print('batas waktu: $batasWaktu');
+    if (dateNow.hour > batasWaktu.hour) {
+      DateTime rangeTime = DateTime(
+          dateNow.year,
+          dateNow.month,
+          dateNow.day,
+          dateNow.hour > 08 ? dateNow.hour - 08 : 08 - dateNow.hour,
+          dateNow.minute > 08 ? dateNow.minute - 30 : 30 - dateNow.minute);
+      print(' Lama keterlambatan ${DateFormat.Hm().format(rangeTime)}');
+      print('Terlambat');
+    } else {
+      print('tidak terlambat');
+    }
+  }
+
   void isAbsen() async {
     isLoading = true;
     print('Absen');
@@ -143,7 +162,8 @@ class KehadiranController extends GetxController {
 
     DateTime now = DateTime.now();
     print(DateFormat.yMd().format(now));
-    String getTodayID = DateFormat.yMd().format(now).replaceAll('/', '-');
+    String getDateHours = DateFormat.Hm().format(now).replaceAll('/', '-');
+    DateTime batasWaktu = DateTime(now.year, now.month, now.day, 08, 30);
 
     String statusLoc = 'Di Luar Qtera';
 
@@ -153,16 +173,52 @@ class KehadiranController extends GetxController {
 
     await storage.ref('$name').putFile(finalImage);
     String urlImage = await storage.ref('$name').getDownloadURL();
+    if (pilihan == 'Masuk') {
+      if (now.hour > batasWaktu.hour) {
+        DateTime rangeTime = DateTime(
+            now.year,
+            now.month,
+            now.day,
+            now.hour > 08 ? now.hour - 08 : 08 - now.hour,
+            now.minute > 30 ? now.minute - 30 : 30 - now.minute);
+        String timeParsString = DateFormat.Hm().format(rangeTime);
+        await colKehadiran.doc().set({
+          'date': now.toIso8601String(),
+          'lat': position.latitude,
+          'long': position.longitude,
+          'place': placeC.text,
+          'satus_keterlambatan': 'Terlambat',
+          pilihan == 'Masuk' ? 'in' : 'out': getDateHours,
+          'range_keterlambatan': timeParsString,
+          'address': addres,
+          'image': urlImage,
+          'status': pilihan
+        });
+      } else {
+        await colKehadiran.doc().set({
+          'date': now.toIso8601String(),
+          'lat': position.latitude,
+          'long': position.longitude,
+          'place': placeC.text,
+          pilihan == 'Masuk' ? 'in' : 'out': getDateHours,
+          'address': addres,
+          'image': urlImage,
+          'status': pilihan
+        });
+      }
+    } else {
+      await colKehadiran.doc().set({
+        'date': now.toIso8601String(),
+        'lat': position.latitude,
+        'long': position.longitude,
+        'place': placeC.text,
+        pilihan == 'Masuk' ? 'in' : 'out': getDateHours,
+        'address': addres,
+        'image': urlImage,
+        'status': pilihan
+      });
+    }
 
-    await colKehadiran.doc().set({
-      'date': now.toIso8601String(),
-      'lat': position.latitude,
-      'long': position.longitude,
-      'place': placeC.text,
-      'address': addres,
-      'image': urlImage,
-      'status': pilihan
-    });
     Get.snackbar('Berhasi Masuk', 'Anda berhasil absen Masuk');
     Get.to(HomeView());
 

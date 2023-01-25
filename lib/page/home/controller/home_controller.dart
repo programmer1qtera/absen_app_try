@@ -30,7 +30,7 @@ class HomeController extends GetxController {
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getIzin() async* {
     String uid = await auth.currentUser!.uid;
-    yield* firestore.collection('user').doc(uid).collection('izin').snapshots();
+    yield* firestore.collection('user').doc(uid).collection('cuti').snapshots();
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getSakit(String idParam) async* {

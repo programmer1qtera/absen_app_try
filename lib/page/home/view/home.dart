@@ -1,9 +1,9 @@
 import 'package:absen_try_app/model/user_model.dart';
 import 'package:absen_try_app/page/home/controller/home_controller.dart';
-import 'package:absen_try_app/page/izin/view/izin_view.dart';
+import 'package:absen_try_app/page/cuti/view/cuti_view.dart';
 import 'package:absen_try_app/page/kehadiran/view/kehadiran.dart';
 import 'package:absen_try_app/page/profile/view/profile_view.dart';
-import 'package:absen_try_app/page/sakit/view/sakit_page.dart';
+import 'package:absen_try_app/page/tidak_hadir/view/tidak_hadir_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,6 +20,7 @@ class HomeView extends GetView<HomeController> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Home'),
+        leading: Container(),
         actions: [
           IconButton(
               onPressed: () {
@@ -49,7 +50,7 @@ class HomeView extends GetView<HomeController> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'welcome ${userMod.id}',
+                            'welcome',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18),
                           ),
@@ -128,7 +129,7 @@ class HomeView extends GetView<HomeController> {
                             children: [
                               InkWell(
                                 onTap: () {
-                                  Get.to(IzinView());
+                                  Get.to(TidakHadirView());
                                 },
                                 child: CircleAvatar(
                                   radius: 30,
@@ -143,29 +144,7 @@ class HomeView extends GetView<HomeController> {
                               SizedBox(
                                 height: 10,
                               ),
-                              Text('Izin')
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  Get.to(SakitView());
-                                },
-                                child: CircleAvatar(
-                                  radius: 30,
-                                  backgroundColor: Colors.redAccent,
-                                  child: Icon(
-                                    Icons.add,
-                                    color: Colors.black,
-                                    size: 30,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Text('Sakit')
+                              Text('Tidak Hadir')
                             ],
                           ),
                         ],
@@ -261,11 +240,10 @@ class HomeView extends GetView<HomeController> {
                                                                     .redAccent,
                                                             fontSize: 18),
                                                       ),
-                                                      Text(
-                                                        data['date'] == null
-                                                            ? '-'
-                                                            : '${DateFormat.Hms().format(DateTime.parse(data['date']))}',
-                                                      )
+                                                      Text(data['status'] ==
+                                                              'Masuk'
+                                                          ? 'in :${data['in']}'
+                                                          : 'out :${data['out']}')
                                                     ],
                                                   ),
                                                   SizedBox(
@@ -276,7 +254,9 @@ class HomeView extends GetView<HomeController> {
                                                     style:
                                                         TextStyle(fontSize: 18),
                                                   ),
-
+                                                  SizedBox(
+                                                    height: 8,
+                                                  ),
                                                   Text(
                                                       '${DateFormat.yMMMEd().format(DateTime.parse(data['date']))}'),
                                                   Text('${data['address']}'),
@@ -284,6 +264,44 @@ class HomeView extends GetView<HomeController> {
                                                   SizedBox(
                                                     height: 8,
                                                   ),
+                                                  data['satus_keterlambatan'] !=
+                                                          null
+                                                      ? Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                                'Status : ${data['satus_keterlambatan']}'),
+                                                            Text(
+                                                                'Jangka waktu Keterlambatan : ${data['range_keterlambatan']}')
+                                                          ],
+                                                        )
+                                                      : SizedBox(
+                                                          height: 5,
+                                                        ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.end,
+                                                    children: [
+                                                      InkWell(
+                                                          onTap: () {
+                                                            showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (context) =>
+                                                                      MapsView(
+                                                                data: data,
+                                                              ),
+                                                            );
+                                                          },
+                                                          child: Icon(Icons
+                                                              .location_history)),
+                                                    ],
+                                                  )
 
                                                   // Text('Keluar'),
                                                   // Text(data['keluar'] == null
@@ -305,7 +323,7 @@ class HomeView extends GetView<HomeController> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Izin'),
+                          Text('Cuti'),
                           TextButton(
                               onPressed: () {}, child: Text('See more ->'))
                         ],
@@ -352,7 +370,7 @@ class HomeView extends GetView<HomeController> {
                                               MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
-                                              'Izin',
+                                              'Cuti',
                                               // ${DateFormat('EEEEE').format(DateTime.parse(dataIzin['date']))}',
                                               style: TextStyle(
                                                   fontWeight: FontWeight.w600,
@@ -363,6 +381,8 @@ class HomeView extends GetView<HomeController> {
                                               dataIzin['date'] == null
                                                   ? '-'
                                                   : '${DateFormat.Hms().format(DateTime.parse(dataIzin['date']))}',
+                                              style: TextStyle(
+                                                  color: Colors.grey[300]),
                                             ),
                                           ],
                                         ),
@@ -375,8 +395,13 @@ class HomeView extends GetView<HomeController> {
                                         Text(
                                           '${dataIzin['address']}',
                                           style: TextStyle(
-                                              color: Colors.grey[600]),
+                                              color: Colors.grey[300]),
                                         ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                            'Tgl Pengajuan Cuti : ${dataIzin['tanggal_cuti']}'),
                                         SizedBox(
                                           height: 10,
                                         ),
@@ -472,13 +497,19 @@ class HomeView extends GetView<HomeController> {
                                         Text(
                                           '${DateFormat.yMMMEd().format(DateTime.parse(dataIzin['date']))}',
                                           style: TextStyle(
-                                              color: Colors.grey[600]),
+                                              color: Colors.grey[400]),
                                         ),
+
                                         Text(
                                           '${dataIzin['address']}',
                                           style: TextStyle(
-                                              color: Colors.grey[600]),
+                                              color: Colors.grey[400]),
                                         ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                            'Tgl Pengajuan sakit : ${dataIzin['tanggal_pengajuan_sakit']}'),
                                         SizedBox(
                                           height: 10,
                                         ),

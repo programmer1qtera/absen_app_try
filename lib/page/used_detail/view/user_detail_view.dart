@@ -1,6 +1,6 @@
 import 'package:absen_try_app/model/user_model.dart';
 import 'package:absen_try_app/page/home/controller/home_controller.dart';
-import 'package:absen_try_app/page/izin/view/izin_view.dart';
+import 'package:absen_try_app/page/cuti/view/cuti_view.dart';
 import 'package:absen_try_app/page/kehadiran/view/kehadiran.dart';
 import 'package:absen_try_app/page/profile/view/profile_view.dart';
 import 'package:absen_try_app/page/sakit/view/sakit_page.dart';
@@ -22,13 +22,7 @@ class UserDetail extends GetView<UserDetailController> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Detail User'),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Get.to(ProfileView());
-              },
-              icon: Icon(Icons.person))
-        ],
+        leading: Container(),
       ),
       body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
           stream: controller.streamHome(userDetailMod.id),
@@ -222,11 +216,10 @@ class UserDetail extends GetView<UserDetailController> {
                                                                     .redAccent,
                                                             fontSize: 18),
                                                       ),
-                                                      Text(
-                                                        data['date'] == null
-                                                            ? '-'
-                                                            : '${DateFormat.Hms().format(DateTime.parse(data['date']))}',
-                                                      )
+                                                      Text(data['status'] ==
+                                                              'Masuk'
+                                                          ? 'in :${data['in']}'
+                                                          : 'out :${data['out']}')
                                                     ],
                                                   ),
                                                   SizedBox(

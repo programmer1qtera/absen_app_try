@@ -1,25 +1,26 @@
-import 'package:absen_try_app/page/sakit/controlller/sakit_controller.dart';
+import 'package:absen_try_app/page/cuti/controller/cuti_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class SakitView extends GetView<SakitController> {
-  const SakitView({super.key});
+class CutiView extends GetView<CutiController> {
+  const CutiView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var controller = Get.put(SakitController());
-    controller.fileName = null;
+    var controller = Get.put(CutiController());
     controller.getDateTime = null;
+    controller.fileName = null;
+    controller.controllerDesc.text == '';
     return Padding(
       padding: const EdgeInsets.all(10),
-      child: GetBuilder<SakitController>(builder: (c) {
+      child: GetBuilder<CutiController>(builder: (c) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Izin Sakit',
+              'Izin Cuti',
               style: TextStyle(
-                  color: Colors.redAccent,
+                  color: Colors.yellowAccent,
                   fontSize: 20,
                   fontWeight: FontWeight.w600),
             ),
@@ -29,7 +30,9 @@ class SakitView extends GetView<SakitController> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(c.getDateTime == null ? 'Date time' : '${c.getDateTime}'),
+                Text(c.getDateTime == null
+                    ? 'Pilih Tanggal Cuti'
+                    : '${c.getDateTime}'),
                 IconButton(
                     onPressed: () {
                       c.getCalender(context);
@@ -57,17 +60,18 @@ class SakitView extends GetView<SakitController> {
               maxLines: 5,
               controller: controller.controllerDesc,
               decoration: InputDecoration(
-                  hintText: 'Keterangan sakit', border: OutlineInputBorder()),
+                  hintText: 'Keterangan Cuti', border: OutlineInputBorder()),
             ),
             ElevatedButton(
                 onPressed: () {
-                  if (controller.controllerDesc.text == '') {
-                    Get.snackbar('Keterangan Diisi', 'Keterangan harus di isi');
+                  if (controller.controllerDesc.text == null ||
+                      controller.controllerDesc.text == '') {
+                    Get.snackbar('Keterang Diisi', 'Keterangan harus diisi');
                   } else {
-                    controller.isSakit();
+                    controller.keterlambatan();
                   }
                 },
-                child: Text('Sakit'))
+                child: Text('Cuti'))
           ],
         );
       }),
