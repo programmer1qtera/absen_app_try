@@ -14,6 +14,13 @@ class AdminView extends GetView<AdminController> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Admin'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                controller.signOut();
+              },
+              icon: Icon(Icons.logout))
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(

@@ -2,13 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
-import '../../../model/user_model.dart';
 // import 'package:intl/intl.dart';
 
 class UserDetailController extends GetxController {
   FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   bool isKehadiran = false;
+  bool isAprove = false;
+  int? selectIndex;
 
   // late UserModel _userMember;
   // UserModel get result => _userMember;
@@ -49,6 +50,13 @@ class UserDetailController extends GetxController {
 
   void kehadiranPop() {
     isKehadiran = !isKehadiran;
+    update();
+  }
+
+  void aprov(idx) {
+    selectIndex = idx;
+    print(selectIndex);
+    selectIndex == idx ? isAprove = true : null;
     update();
   }
 }

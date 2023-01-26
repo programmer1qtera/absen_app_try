@@ -94,6 +94,7 @@ class CutiController extends GetxController {
       'long': position.longitude,
       'description': controllerDesc.text,
       'tanggal_cuti': getDateTime,
+      'proved': false,
       'address': addres,
       'nameFile': fileName,
       // 'file': filePDF,
@@ -175,6 +176,7 @@ class CutiController extends GetxController {
     // print(releaseTime);
     // print(roomBooked);
     DateTime date = DateTime.now();
+
     DateTime firstDayPic = DateTime(date.year, date.month, date.day + 6);
     DateTime? newDate = await showDatePicker(
         helpText: 'Qtera Calender ',

@@ -68,7 +68,7 @@ class CutiView extends GetView<CutiController> {
                       controller.controllerDesc.text == '') {
                     Get.snackbar('Keterang Diisi', 'Keterangan harus diisi');
                   } else {
-                    controller.keterlambatan();
+                    controller.isIzin();
                   }
                 },
                 child: Text('Cuti'))

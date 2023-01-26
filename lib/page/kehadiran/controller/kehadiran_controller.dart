@@ -21,7 +21,8 @@ class KehadiranController extends GetxController {
   FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  var isLoading = false;
+  bool isLoading = false;
+  bool cameraLoad = false;
   // String textImg = 'Tes iamsnnahhhs';
   var itemAbsenLog = ['Masuk', 'Keluar'];
 
@@ -54,6 +55,8 @@ class KehadiranController extends GetxController {
     // Map<String, dynamic> dataResponse = await determinePosition();
 
     if (dataResponse['error'] != true) {
+      cameraLoad = true;
+      update();
       Position position = dataResponse['position'];
       List<Placemark> placemarks =
           await placemarkFromCoordinates(position.latitude, position.longitude);
@@ -61,7 +64,7 @@ class KehadiranController extends GetxController {
       print(placemarks);
 
       String addres =
-          '${placemarks[0].thoroughfare}, ${placemarks[0].subLocality}';
+          '${placemarks[0].street},${placemarks[0].thoroughfare}, ${placemarks[0].subLocality}';
       print(addres);
       photo =
           await _picker.pickImage(imageQuality: 50, source: ImageSource.camera);
@@ -78,13 +81,17 @@ class KehadiranController extends GetxController {
 
         finalImage = File(photo!.path)..writeAsBytesSync(encodeImage);
       } else {
-        print(photo?.name);
+        cameraLoad = false;
+        update();
+        Get.snackbar('Image erorr', 'Terjadi Kesalahan');
       }
+      cameraLoad = false;
+      update();
     } else {
+      cameraLoad = false;
+      update();
       Get.snackbar('Eror', dataResponse['message']);
     }
-
-    update();
   }
 
   void keterlambatan() {
@@ -106,16 +113,21 @@ class KehadiranController extends GetxController {
     }
   }
 
-  void isAbsen() async {
-    isLoading = true;
+  Future<void> isAbsen() async {
     print('Absen');
+    isLoading = true;
+    update();
     Map<String, dynamic> dataResponse = await determinePosition();
 
     if (pilihan == null) {
+      isLoading = false;
+      update();
       Get.snackbar('Info', 'Silakan pilih kategori absen terlebih dahulu');
     } else {
       if (photo != null) {
         if (dataResponse['error'] != true) {
+          isLoading = true;
+          update();
           Position position = dataResponse['position'];
           List<Placemark> placemarks = await placemarkFromCoordinates(
               position.latitude, position.longitude);
@@ -131,19 +143,19 @@ class KehadiranController extends GetxController {
 
           print('last ${position.latitude},${position.longitude}');
           Get.snackbar('Berhasi Masuk', 'Anda berhasil absen Masuk');
-
-          isLoading = false;
         } else {
           Get.snackbar('Eror', dataResponse['message']);
           isLoading = false;
+          update();
         }
       } else {
         Get.snackbar('Error', 'Foto terlebih dahulu');
         isLoading = false;
+        update();
       }
+      isLoading = false;
+      update();
     }
-
-    update();
   }
 
   // Future<dynamic> uploadImageToStorage() async {
@@ -174,7 +186,7 @@ class KehadiranController extends GetxController {
     await storage.ref('$name').putFile(finalImage);
     String urlImage = await storage.ref('$name').getDownloadURL();
     if (pilihan == 'Masuk') {
-      if (now.hour > batasWaktu.hour) {
+      if (now.hour >= batasWaktu.hour || now.minute >= batasWaktu.minute) {
         DateTime rangeTime = DateTime(
             now.year,
             now.month,
@@ -206,6 +218,7 @@ class KehadiranController extends GetxController {
           'status': pilihan
         });
       }
+      Get.snackbar('Berhasi Absen', 'Anda berhasil absen Masuk');
     } else {
       await colKehadiran.doc().set({
         'date': now.toIso8601String(),
@@ -217,9 +230,9 @@ class KehadiranController extends GetxController {
         'image': urlImage,
         'status': pilihan
       });
+      Get.snackbar('Berhasi Absen', 'Anda berhasil absen Keluar');
     }
 
-    Get.snackbar('Berhasi Masuk', 'Anda berhasil absen Masuk');
     Get.to(HomeView());
 
     // print(getKehadiran.docs.length);

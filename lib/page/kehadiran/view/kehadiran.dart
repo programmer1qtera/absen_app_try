@@ -11,7 +11,7 @@ class KehadiranView extends GetView<KehadiranController> {
     var controller = Get.put(KehadiranController());
     controller.pilihan = null;
     controller.photo = null;
-    controller.placeC.text == '';
+    controller.placeC.text == null;
 
     return Scaffold(
         appBar: AppBar(
@@ -60,16 +60,22 @@ class KehadiranView extends GetView<KehadiranController> {
                 height: 20,
               ),
               GetBuilder<KehadiranController>(builder: (c) {
-                if (c.photo != null) {
-                  return Container(
-                      height: 250,
-                      width: double.infinity,
-                      child: Image.file(
-                        c.finalImage,
-                        fit: BoxFit.cover,
-                      ));
+                if (c.cameraLoad == false) {
+                  if (c.photo != null) {
+                    return Container(
+                        height: 250,
+                        width: double.infinity,
+                        child: Image.file(
+                          c.finalImage,
+                          fit: BoxFit.cover,
+                        ));
+                  } else {
+                    return Container(height: 250, color: Colors.grey[800]);
+                  }
                 } else {
-                  return Container(height: 250, color: Colors.grey[800]);
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
                 }
               }),
               ElevatedButton(
@@ -92,9 +98,20 @@ class KehadiranView extends GetView<KehadiranController> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  controller.isAbsen();
+                  if (controller.isLoading == false) {
+                    controller.isAbsen();
+                  } else {
+                    Get.snackbar('Tunggu', 'Sedang proses pengecekan');
+                  }
                 },
-                child: Text('Absen Sekarang'),
+                child: GetBuilder<KehadiranController>(builder: (c3) {
+                  return c3.isLoading == true
+                      ? Center(
+                          child: CircularProgressIndicator(
+                          color: Colors.white,
+                        ))
+                      : Text('Absen Sekarang');
+                }),
               ),
             ],
           ),

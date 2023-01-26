@@ -1,3 +1,5 @@
+import 'package:absen_try_app/model/izin_model.dart';
+import 'package:absen_try_app/model/keahdiran_model.dart';
 import 'package:absen_try_app/model/user_model.dart';
 import 'package:absen_try_app/page/home/controller/home_controller.dart';
 import 'package:absen_try_app/page/cuti/view/cuti_view.dart';
@@ -5,6 +7,7 @@ import 'package:absen_try_app/page/kehadiran/view/kehadiran.dart';
 import 'package:absen_try_app/page/profile/view/profile_view.dart';
 import 'package:absen_try_app/page/sakit/view/sakit_page.dart';
 import 'package:absen_try_app/page/used_detail/controller/user_detail_controller.dart';
+import 'package:absen_try_app/page/user_detail_izin/view/user_detail_izin.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,7 +25,7 @@ class UserDetail extends GetView<UserDetailController> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Detail User'),
-        leading: Container(),
+        // leading: Container(),
       ),
       body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
           stream: controller.streamHome(userDetailMod.id),
@@ -158,7 +161,7 @@ class UserDetail extends GetView<UserDetailController> {
                                       }
                                       // print(snapshotP.data?.data());
                                       if (snapshotP.data?.docs.length == 0 ||
-                                          snapshotP.data?.docs == null) {
+                                          snapshotP.data?.docs.length == null) {
                                         return Center(
                                           child: Text('Belum Ada Data Absen'),
                                         );
@@ -171,6 +174,9 @@ class UserDetail extends GetView<UserDetailController> {
                                         itemBuilder: (context, index) {
                                           var data = snapshotP.data!.docs[index]
                                               .data();
+                                          KehadiranModel kehadiranMod =
+                                              KehadiranModel.fromDoc(
+                                                  snapshotP.data!.docs[index]);
                                           // var getDataItem = snapshot.data?.data();
                                           return Card(
                                             child: Padding(
@@ -190,7 +196,7 @@ class UserDetail extends GetView<UserDetailController> {
                                                           //       'Limit Firebase load image'),
                                                           // ),
                                                           Image.network(
-                                                        data['image'],
+                                                        '${data['image']}',
                                                         fit: BoxFit.cover,
                                                       )),
                                                   SizedBox(
@@ -234,6 +240,23 @@ class UserDetail extends GetView<UserDetailController> {
                                                   Text(
                                                       '${DateFormat.yMMMEd().format(DateTime.parse(data['date']))}'),
                                                   Text('${data['address']}'),
+                                                  kehadiranMod.statusKeterlambatan !=
+                                                          null
+                                                      ? Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          // mainAxisAlignment: ,
+                                                          children: [
+                                                            Text(
+                                                                'Status : ${kehadiranMod.statusKeterlambatan}'),
+                                                            Text(
+                                                                'Lama Keterlambatan : ${kehadiranMod.lamaKeterlambatan}'),
+                                                          ],
+                                                        )
+                                                      : SizedBox(
+                                                          height: 2,
+                                                        ),
 
                                                   SizedBox(
                                                     height: 8,
@@ -303,79 +326,109 @@ class UserDetail extends GetView<UserDetailController> {
                               );
                             }
 
-                            return ListView.builder(
-                              physics: NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: snapshotI.data?.docs.length,
-                              itemBuilder: (context, index) {
-                                var dataIzin =
-                                    snapshotI.data!.docs[index].data();
-                                // var getDataItem = snapshot.data?.data();
-                                return Card(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(15),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              'Izin',
-                                              // ${DateFormat('EEEEE').format(DateTime.parse(dataIzin['date']))}',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.yellowAccent,
-                                                  fontSize: 18),
-                                            ),
-                                            Text(
-                                              dataIzin['date'] == null
-                                                  ? '-'
-                                                  : '${DateFormat.Hms().format(DateTime.parse(dataIzin['date']))}',
-                                            ),
-                                          ],
-                                        ),
+                            return GetBuilder<UserDetailController>(
+                                builder: (c2) {
+                              return ListView.builder(
+                                physics: NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: snapshotI.data?.docs.length,
+                                itemBuilder: (context, index) {
+                                  var dataIzin =
+                                      snapshotI.data!.docs[index].data();
 
-                                        Text(
-                                          '${DateFormat.yMMMEd().format(DateTime.parse(dataIzin['date']))}',
-                                          style: TextStyle(
-                                              color: Colors.grey[400]),
-                                        ),
-                                        Text(
-                                          '${dataIzin['address']}',
-                                          style: TextStyle(
-                                              color: Colors.grey[400]),
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        Text('${dataIzin['description']}'),
-                                        Row(
+                                  IzinModel izinMod = IzinModel.fromDoc(
+                                      snapshotI.data!.docs[index]);
+                                  // var getDataItem = snapshot.data?.data();
+                                  return InkWell(
+                                    onTap: () {
+                                      Get.to(UserDetailIzin(
+                                        izinMod: izinMod,
+                                        userModel: userMod,
+                                      ));
+                                    },
+                                    child: Card(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(15),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            Icon(Icons.file_present),
-                                            SizedBox(
-                                              width: 10,
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Container(
+                                                    color:
+                                                        izinMod.proved == true
+                                                            ? Colors.green
+                                                            : Colors.grey,
+                                                    padding: EdgeInsets.all(8),
+                                                    child: Text('Aproved'),
+                                                  ),
+                                                )
+                                              ],
                                             ),
-                                            Text('${dataIzin['nameFile']}')
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  'Cuti',
+                                                  // ${DateFormat('EEEEE').format(DateTime.parse(dataIzin['date']))}',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color:
+                                                          Colors.yellowAccent,
+                                                      fontSize: 18),
+                                                ),
+                                                Text(
+                                                  izinMod.date == null
+                                                      ? '-'
+                                                      : '${DateFormat.Hms().format(DateTime.parse('${izinMod.date}'))}',
+                                                ),
+                                              ],
+                                            ),
+
+                                            Text(
+                                                'Tgl Pengajuan Cuti : ${dataIzin['tanggal_cuti']}'),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Text('${dataIzin['description']}'),
+                                            Row(
+                                              children: [
+                                                Icon(Icons.file_present),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Text('${dataIzin['nameFile']}')
+                                              ],
+                                            )
+                                            // Text('Keluar'),
+                                            // Text(data['keluar'] == null
+                                            //     ? '-'
+                                            //     : '${DateFormat.yMMMEd().add_Hms().format(DateTime.parse(data['keluar']['date']))}'),
+                                            // Text(data['keluar'] == null
+                                            //     ? '-'
+                                            //     : '${data['keluar']['address']}'),
                                           ],
-                                        )
-                                        // Text('Keluar'),
-                                        // Text(data['keluar'] == null
-                                        //     ? '-'
-                                        //     : '${DateFormat.yMMMEd().add_Hms().format(DateTime.parse(data['keluar']['date']))}'),
-                                        // Text(data['keluar'] == null
-                                        //     ? '-'
-                                        //     : '${data['keluar']['address']}'),
-                                      ],
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
-                            );
+                                  );
+                                },
+                              );
+                            });
                           }),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

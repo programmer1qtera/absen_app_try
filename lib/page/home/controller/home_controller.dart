@@ -1,3 +1,4 @@
+import 'package:absen_try_app/page/login/view/login_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -16,6 +17,11 @@ class HomeController extends GetxController {
   Stream<DocumentSnapshot<Map<String, dynamic>>> streamHome() async* {
     String uid = await auth.currentUser!.uid;
     yield* firestore.collection('user').doc(uid).snapshots();
+  }
+
+  Future<void> signOut() async {
+    await auth.signOut();
+    Get.offAll(LoginView());
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getKehadiran() async* {

@@ -1,3 +1,5 @@
+import 'package:absen_try_app/model/izin_model.dart';
+import 'package:absen_try_app/model/keahdiran_model.dart';
 import 'package:absen_try_app/model/user_model.dart';
 import 'package:absen_try_app/page/home/controller/home_controller.dart';
 import 'package:absen_try_app/page/cuti/view/cuti_view.dart';
@@ -26,7 +28,12 @@ class HomeView extends GetView<HomeController> {
               onPressed: () {
                 Get.to(ProfileView());
               },
-              icon: Icon(Icons.person))
+              icon: Icon(Icons.person)),
+          IconButton(
+              onPressed: () {
+                controller.signOut();
+              },
+              icon: Icon(Icons.logout))
         ],
       ),
       body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -195,6 +202,10 @@ class HomeView extends GetView<HomeController> {
                                         itemBuilder: (context, index) {
                                           var data = snapshotP.data!.docs[index]
                                               .data();
+                                          KehadiranModel kehadiranModel =
+                                              KehadiranModel.fromDoc(
+                                                  snapshotP.data!.docs[index]);
+
                                           // var getDataItem = snapshot.data?.data();
                                           return Card(
                                             child: Padding(
@@ -240,17 +251,18 @@ class HomeView extends GetView<HomeController> {
                                                                     .redAccent,
                                                             fontSize: 18),
                                                       ),
-                                                      Text(data['status'] ==
+                                                      Text(kehadiranModel
+                                                                  .status ==
                                                               'Masuk'
-                                                          ? 'in :${data['in']}'
-                                                          : 'out :${data['out']}')
+                                                          ? 'in : ${kehadiranModel.inn}'
+                                                          : 'out : ${kehadiranModel.out}')
                                                     ],
                                                   ),
                                                   SizedBox(
                                                     height: 15,
                                                   ),
                                                   Text(
-                                                    '${data['place']}',
+                                                    '${kehadiranModel.place}',
                                                     style:
                                                         TextStyle(fontSize: 18),
                                                   ),
@@ -264,7 +276,8 @@ class HomeView extends GetView<HomeController> {
                                                   SizedBox(
                                                     height: 8,
                                                   ),
-                                                  data['satus_keterlambatan'] !=
+                                                  kehadiranModel
+                                                              .statusKeterlambatan !=
                                                           null
                                                       ? Column(
                                                           mainAxisAlignment:
@@ -277,7 +290,7 @@ class HomeView extends GetView<HomeController> {
                                                             Text(
                                                                 'Status : ${data['satus_keterlambatan']}'),
                                                             Text(
-                                                                'Jangka waktu Keterlambatan : ${data['range_keterlambatan']}')
+                                                                'Jangka waktu Keterlambatan : ${kehadiranModel.lamaKeterlambatan}')
                                                           ],
                                                         )
                                                       : SizedBox(
@@ -356,6 +369,8 @@ class HomeView extends GetView<HomeController> {
                                 var dataIzin =
                                     snapshotI.data!.docs[index].data();
                                 // var getDataItem = snapshot.data?.data();
+                                IzinModel izinModel = IzinModel.fromDoc(
+                                    snapshotI.data!.docs[index]);
                                 return Card(
                                   child: Padding(
                                     padding: const EdgeInsets.all(15),
@@ -365,6 +380,25 @@ class HomeView extends GetView<HomeController> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Container(
+                                              color: izinModel.proved == true
+                                                  ? Colors.green
+                                                  : Colors.grey,
+                                              padding: EdgeInsets.all(8),
+                                              child: Text(
+                                                  izinModel.proved == true
+                                                      ? 'Aproved'
+                                                      : 'Waiting'),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
