@@ -19,6 +19,26 @@ class UserDetailController extends GetxController {
     yield* firestore.collection('user').doc(idParams).snapshots();
   }
 
+  Future<void> aproved(String userId, String kehadiranId) async {
+    await firestore
+        .collection('user')
+        .doc(userId)
+        .collection('kehadiran')
+        .doc(kehadiranId)
+        .update({'isProve': 'Proved'});
+    Get.back();
+  }
+
+  Future<void> notAproved(String userId, String kehadiranId) async {
+    await firestore
+        .collection('user')
+        .doc(userId)
+        .collection('kehadiran')
+        .doc(kehadiranId)
+        .update({'isProve': 'Not Proved'});
+    Get.back();
+  }
+
   Stream<QuerySnapshot<Map<String, dynamic>>> getKehadiran(
       String idParams) async* {
     // String uid = await auth.currentUser!.uid;
@@ -26,7 +46,7 @@ class UserDetailController extends GetxController {
         .collection('user')
         .doc(idParams)
         .collection('kehadiran')
-        .orderBy('date')
+        .orderBy('date', descending: true)
         .snapshots();
   }
 
@@ -36,6 +56,7 @@ class UserDetailController extends GetxController {
         .collection('user')
         .doc(idParams)
         .collection('cuti')
+        .orderBy('date', descending: true)
         .snapshots();
   }
 
@@ -45,6 +66,7 @@ class UserDetailController extends GetxController {
         .collection('user')
         .doc(idParams)
         .collection('sakit')
+        .orderBy('date', descending: true)
         .snapshots();
   }
 

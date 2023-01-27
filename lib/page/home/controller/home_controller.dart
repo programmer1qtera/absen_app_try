@@ -30,13 +30,18 @@ class HomeController extends GetxController {
         .collection('user')
         .doc(uid)
         .collection('kehadiran')
-        .orderBy('date')
+        .orderBy('date', descending: true)
         .snapshots();
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getIzin() async* {
     String uid = await auth.currentUser!.uid;
-    yield* firestore.collection('user').doc(uid).collection('cuti').snapshots();
+    yield* firestore
+        .collection('user')
+        .doc(uid)
+        .collection('cuti')
+        .orderBy('date', descending: true)
+        .snapshots();
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getSakit(String idParam) async* {
@@ -45,11 +50,43 @@ class HomeController extends GetxController {
         .collection('user')
         .doc(idParam)
         .collection('sakit')
+        .orderBy('date', descending: true)
         .snapshots();
   }
 
   void kehadiranPop() {
     isKehadiran = !isKehadiran;
     update();
+  }
+
+  Future<dynamic> getCuti() async {
+    //implemen add cuti otomatic
+    DateTime now = DateTime.now();
+    String uid = auth.currentUser!.uid;
+    var collectionUser = await firestore.collection('user').doc(uid).get();
+    var getCutiFirebase = collectionUser.data()!['sisa_cuti'];
+    int sisaCuti = 12;
+    print(now.month);
+    if (now.month == 1 && now.day == 1) {
+      print('Tahun Baru');
+      getCutiFirebase += 12;
+      print(getCutiFirebase);
+    } else {
+      print('Belum tahun baru');
+    }
+    //implement  cuti pengurangan by user
+    // String uid = auth.currentUser!.uid;
+    // var collectionUser = await firestore.collection('user').doc(uid).get();
+    // // return UserModel.fromDoc(collectionUser);
+    // var collectionKehadiran =
+    //     await firestore.collection('user').doc(uid).collection('cuti').get();
+
+    // // print(userCredential);
+    // var getRole = collectionUser.data()!['sisa_cuti'];
+    // var getLengtCuti = collectionKehadiran.docs.length;
+    // var countCuti = getRole - getLengtCuti;
+    // print(getRole);
+    // print(getLengtCuti);
+    // print(countCuti);
   }
 }

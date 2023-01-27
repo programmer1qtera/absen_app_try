@@ -18,15 +18,45 @@ class SakitController extends GetxController {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   String? getDateTime;
-  File? file;
-  String? fileName;
+  File? fileSuratSakit;
+  String? fileNameSuratSakit;
 
-  void pickFile() async {
+  File? fileCopyResep;
+  String? fileNameCopyResep;
+
+  File? fileKuitansi;
+  String? fileNameKuitansi;
+
+  void pickFileSuratSakit() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles();
     if (result != null) {
-      file = File(result.files.single.path!);
-      fileName = result.files.single.name;
-      print(fileName);
+      fileSuratSakit = File(result.files.single.path!);
+      fileNameSuratSakit = result.files.single.name;
+      print(fileNameSuratSakit);
+      update();
+    } else {
+      print('error');
+    }
+  }
+
+  void pickFileCopyResep() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      fileCopyResep = File(result.files.single.path!);
+      fileNameCopyResep = result.files.single.name;
+      print(fileNameCopyResep);
+      update();
+    } else {
+      print('error');
+    }
+  }
+
+  void pickFileKuitansi() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      fileKuitansi = File(result.files.single.path!);
+      fileNameKuitansi = result.files.single.name;
+      print(fileNameKuitansi);
       update();
     } else {
       print('error');
@@ -83,7 +113,7 @@ class SakitController extends GetxController {
     print('Sakit');
     Map<String, dynamic> dataResponse = await determinePosition();
     if (getDateTime != null) {
-      if (file != null) {
+      if (fileSuratSakit != null) {
         if (dataResponse['error'] != true) {
           Position position = dataResponse['position'];
           List<Placemark> placemarks = await placemarkFromCoordinates(
@@ -140,7 +170,11 @@ class SakitController extends GetxController {
       'tanggal_pengajuan_sakit': getDateTime,
       'description': controllerDesc.text,
       'address': addres,
-      'nameFile': fileName,
+      'nameFile': {
+        'surat_sakit': fileNameSuratSakit,
+        'copy_resep': fileNameCopyResep,
+        'kuitansi': fileNameKuitansi
+      },
       // 'file': filePDF,
     });
     Get.snackbar('Izin Berhasil', 'Anda berhasil Izin');

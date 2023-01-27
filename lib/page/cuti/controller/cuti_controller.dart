@@ -17,6 +17,7 @@ class CutiController extends GetxController {
   final storage = s.FirebaseStorage.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   String? getDateTime;
+  int? countCuti;
   // DateTime now = DateTime.now();
 
   File? file;
@@ -48,13 +49,14 @@ class CutiController extends GetxController {
 
           String addres =
               '${placemarks[0].thoroughfare}, ${placemarks[0].subLocality}';
-          await updatePosition(position, addres);
+
           print('$addres');
           // double jarak = Geolocator.distanceBetween(
           //     -6.1636573, 106.8922156, position.latitude, position.longitude);
           // print(jarak);
           await present(position, addres);
-
+          await getCuti();
+          await updatePosition(position, addres);
           print('${position.latitude},${position.longitude}');
         } else {
           Get.snackbar('Eror', dataResponse['message']);
@@ -101,6 +103,22 @@ class CutiController extends GetxController {
     });
     Get.snackbar('Izin Berhasil', 'Anda berhasil Izin');
     Get.to(HomeView());
+  }
+
+  Future<dynamic> getCuti() async {
+    String uid = auth.currentUser!.uid;
+    var collectionUser = await firestore.collection('user').doc(uid).get();
+    // return UserModel.fromDoc(collectionUser);
+    // var collectionKehadiran =
+    //     await firestore.collection('user').doc(uid).collection('cuti').get();
+
+    // print(userCredential);
+    int getRole = collectionUser.data()!['sisa_cuti'];
+    // int getLengtCuti = collectionKehadiran.docs.length;
+    countCuti = getRole - 1;
+    print(getRole);
+    // print(getLengtCuti);
+    print(countCuti);
   }
 
   Future<Map<String, dynamic>> determinePosition() async {
@@ -164,7 +182,8 @@ class CutiController extends GetxController {
         'lat': position.latitude,
         'long': position.longitude,
       },
-      'address': addres
+      'address': addres,
+      'sisa_cuti': countCuti
     });
   }
 

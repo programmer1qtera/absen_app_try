@@ -6,10 +6,12 @@ class UserModel {
   final String? address;
   final String? email;
   final String? name;
+  final int? sisaCuti;
 
   UserModel(
       {required this.id,
       required this.nip,
+      required this.sisaCuti,
       required this.address,
       required this.email,
       required this.name});
@@ -21,6 +23,7 @@ class UserModel {
         address: snap["address"],
         name: snap['name'],
         email: snap["email"],
+        sisaCuti: snap['sisa_cuti'],
         nip: snap['nip']);
   }
 

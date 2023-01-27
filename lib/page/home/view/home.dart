@@ -100,6 +100,18 @@ class HomeView extends GetView<HomeController> {
                               SizedBox(
                                 width: 30,
                               ),
+                              Column(
+                                children: [
+                                  Text('Sisa Cuti'),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                  Text(
+                                    '${userMod.sisaCuti}',
+                                    style: TextStyle(fontSize: 22),
+                                  )
+                                ],
+                              )
                             ],
                           ),
                         ),
@@ -207,126 +219,245 @@ class HomeView extends GetView<HomeController> {
                                                   snapshotP.data!.docs[index]);
 
                                           // var getDataItem = snapshot.data?.data();
-                                          return Card(
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(15),
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                      height: 100,
-                                                      width: double.infinity,
-                                                      child:
-                                                          //  Center(
-                                                          //   child: Text(
-                                                          //       'Limit Firebase load image'),
-                                                          // ),
-                                                          Image.network(
-                                                        data['image'],
-                                                        fit: BoxFit.cover,
-                                                      )),
-                                                  SizedBox(
-                                                    height: 15,
-                                                  ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Text(
-                                                        data['status'] == null
-                                                            ? '-'
-                                                            : '${data['status']}',
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            color: data['status'] ==
-                                                                    'Masuk'
-                                                                ? Colors
-                                                                    .greenAccent
-                                                                : Colors
-                                                                    .redAccent,
-                                                            fontSize: 18),
-                                                      ),
-                                                      Text(kehadiranModel
-                                                                  .status ==
-                                                              'Masuk'
-                                                          ? 'in : ${kehadiranModel.inn}'
-                                                          : 'out : ${kehadiranModel.out}')
-                                                    ],
-                                                  ),
-                                                  SizedBox(
-                                                    height: 15,
-                                                  ),
-                                                  Text(
-                                                    '${kehadiranModel.place}',
-                                                    style:
-                                                        TextStyle(fontSize: 18),
-                                                  ),
-                                                  SizedBox(
-                                                    height: 8,
-                                                  ),
-                                                  Text(
-                                                      '${DateFormat.yMMMEd().format(DateTime.parse(data['date']))}'),
-                                                  Text('${data['address']}'),
-
-                                                  SizedBox(
-                                                    height: 8,
-                                                  ),
-                                                  kehadiranModel
-                                                              .statusKeterlambatan !=
-                                                          null
-                                                      ? Column(
+                                          return kehadiranModel.isProve == ''
+                                              ? Card(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            15),
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Row(
                                                           mainAxisAlignment:
                                                               MainAxisAlignment
-                                                                  .start,
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
+                                                                  .spaceBetween,
                                                           children: [
                                                             Text(
-                                                                'Status : ${data['satus_keterlambatan']}'),
+                                                              data['status'] ==
+                                                                      null
+                                                                  ? '-'
+                                                                  : '${data['status']}',
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: data['status'] ==
+                                                                          'Masuk'
+                                                                      ? Colors
+                                                                          .greenAccent
+                                                                      : Colors
+                                                                          .redAccent,
+                                                                  fontSize: 18),
+                                                            ),
+                                                            Container(
+                                                              color:
+                                                                  Colors.grey,
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        8.0),
+                                                                child: Text(
+                                                                    'Menunggu Aprove......'),
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
+                                                        SizedBox(
+                                                          height: 15,
+                                                        ),
+                                                        Text(
+                                                          '${kehadiranModel.place}',
+                                                          style: TextStyle(
+                                                              fontSize: 18),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 10,
+                                                        ),
+                                                        Text(kehadiranModel
+                                                                    .status ==
+                                                                'Masuk'
+                                                            ? 'in : ${kehadiranModel.inn}'
+                                                            : 'out : ${kehadiranModel.out}')
+                                                      ],
+                                                    ),
+                                                  ),
+                                                )
+                                              : Card(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            15),
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Stack(
+                                                          children: [
+                                                            Container(
+                                                                height: 100,
+                                                                width: double
+                                                                    .infinity,
+                                                                child:
+                                                                    //  Center(
+                                                                    //   child: Text(
+                                                                    //       'Limit Firebase load image'),
+                                                                    // ),
+                                                                    Image
+                                                                        .network(
+                                                                  '${kehadiranModel.image}',
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                )),
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .end,
+                                                              children: [
+                                                                Container(
+                                                                  color: kehadiranModel
+                                                                              .isProve ==
+                                                                          'Proved'
+                                                                      ? Colors
+                                                                          .green
+                                                                      : Colors
+                                                                          .red,
+                                                                  // izinModel.proved == true
+                                                                  //     ? Colors.green
+                                                                  //     : Colors.grey,
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .all(
+                                                                              8),
+                                                                  child: Text(
+                                                                      kehadiranModel.isProve ==
+                                                                              'Proved'
+                                                                          ? 'Aproved'
+                                                                          : 'Not Prove'
+                                                                      // izinModel.proved == true
+                                                                      //     ? 'Aproved'
+                                                                      //     : 'Waiting'
+                                                                      ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        SizedBox(
+                                                          height: 15,
+                                                        ),
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
                                                             Text(
-                                                                'Jangka waktu Keterlambatan : ${kehadiranModel.lamaKeterlambatan}')
+                                                              data['status'] ==
+                                                                      null
+                                                                  ? '-'
+                                                                  : '${data['status']}',
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: data['status'] ==
+                                                                          'Masuk'
+                                                                      ? Colors
+                                                                          .greenAccent
+                                                                      : Colors
+                                                                          .redAccent,
+                                                                  fontSize: 18),
+                                                            ),
+                                                            Text(kehadiranModel
+                                                                        .status ==
+                                                                    'Masuk'
+                                                                ? 'in : ${kehadiranModel.inn}'
+                                                                : 'out : ${kehadiranModel.out}')
+                                                          ],
+                                                        ),
+                                                        SizedBox(
+                                                          height: 15,
+                                                        ),
+                                                        Text(
+                                                          '${kehadiranModel.place}',
+                                                          style: TextStyle(
+                                                              fontSize: 18),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 8,
+                                                        ),
+                                                        Text(
+                                                            '${DateFormat.yMMMEd().format(DateTime.parse(data['date']))}'),
+                                                        Text(
+                                                            '${data['address']}'),
+
+                                                        SizedBox(
+                                                          height: 8,
+                                                        ),
+                                                        kehadiranModel
+                                                                    .statusKeterlambatan !=
+                                                                null
+                                                            ? Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                      'Status : ${data['satus_keterlambatan']}'),
+                                                                  Text(
+                                                                      'Jangka waktu Keterlambatan : ${kehadiranModel.lamaKeterlambatan}')
+                                                                ],
+                                                              )
+                                                            : SizedBox(
+                                                                height: 5,
+                                                              ),
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .end,
+                                                          children: [
+                                                            InkWell(
+                                                                onTap: () {
+                                                                  showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (context) =>
+                                                                            MapsView(
+                                                                      data:
+                                                                          data,
+                                                                    ),
+                                                                  );
+                                                                },
+                                                                child: Icon(Icons
+                                                                    .location_history)),
                                                           ],
                                                         )
-                                                      : SizedBox(
-                                                          height: 5,
-                                                        ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.end,
-                                                    children: [
-                                                      InkWell(
-                                                          onTap: () {
-                                                            showDialog(
-                                                              context: context,
-                                                              builder:
-                                                                  (context) =>
-                                                                      MapsView(
-                                                                data: data,
-                                                              ),
-                                                            );
-                                                          },
-                                                          child: Icon(Icons
-                                                              .location_history)),
-                                                    ],
-                                                  )
 
-                                                  // Text('Keluar'),
-                                                  // Text(data['keluar'] == null
-                                                  //     ? '-'
-                                                  //     : '${DateFormat.yMMMEd().add_Hms().format(DateTime.parse(data['keluar']['date']))}'),
-                                                  // Text(data['keluar'] == null
-                                                  //     ? '-'
-                                                  //     : '${data['keluar']['address']}'),
-                                                ],
-                                              ),
-                                            ),
-                                          );
+                                                        // Text('Keluar'),
+                                                        // Text(data['keluar'] == null
+                                                        //     ? '-'
+                                                        //     : '${DateFormat.yMMMEd().add_Hms().format(DateTime.parse(data['keluar']['date']))}'),
+                                                        // Text(data['keluar'] == null
+                                                        //     ? '-'
+                                                        //     : '${data['keluar']['address']}'),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
                                         },
                                       );
                                     }),
@@ -554,7 +685,8 @@ class HomeView extends GetView<HomeController> {
                                             SizedBox(
                                               width: 10,
                                             ),
-                                            Text('${dataIzin['nameFile']}')
+                                            Text(
+                                                '${dataIzin['nameFile']['surat_sakit']}')
                                           ],
                                         )
                                         // Text('Keluar'),
@@ -579,6 +711,11 @@ class HomeView extends GetView<HomeController> {
               return Text('Tidak Ada data');
             }
           }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          controller.getCuti();
+        },
+      ),
     );
   }
 }

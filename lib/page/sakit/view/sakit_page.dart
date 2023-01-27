@@ -8,13 +8,14 @@ class SakitView extends GetView<SakitController> {
   @override
   Widget build(BuildContext context) {
     var controller = Get.put(SakitController());
-    controller.fileName = null;
+    controller.fileNameSuratSakit = null;
     controller.getDateTime = null;
     return Padding(
       padding: const EdgeInsets.all(10),
       child: GetBuilder<SakitController>(builder: (c) {
         return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Izin Sakit',
@@ -37,15 +38,67 @@ class SakitView extends GetView<SakitController> {
                     icon: Icon(Icons.calendar_today))
               ],
             ),
+            SizedBox(
+              height: 10,
+            ),
+            Text('Surat Sakit', style: TextStyle(fontWeight: FontWeight.bold)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(c.fileName != null
-                    ? '${c.fileName}'
-                    : 'file belum di pilih'),
+                Text(
+                    c.fileNameSuratSakit != null
+                        ? '${c.fileNameSuratSakit}'
+                        : 'file belum di pilih',
+                    style: TextStyle(color: Colors.white38)),
                 ElevatedButton(
                     onPressed: () {
-                      c.pickFile();
+                      c.pickFileSuratSakit();
+                    },
+                    child: Text('Pilih file')),
+              ],
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Text(
+              'Copy Resep',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  c.fileNameCopyResep != null
+                      ? '${c.fileNameCopyResep}'
+                      : 'file belum di pilih',
+                  style: TextStyle(color: Colors.white38),
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      c.pickFileCopyResep();
+                    },
+                    child: Text('Pilih file')),
+              ],
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Text(
+              'Kuitansi',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  c.fileNameKuitansi != null
+                      ? '${c.fileNameKuitansi}'
+                      : 'file belum di pilih',
+                  style: TextStyle(color: Colors.white38),
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      c.pickFileKuitansi();
                     },
                     child: Text('Pilih file')),
               ],

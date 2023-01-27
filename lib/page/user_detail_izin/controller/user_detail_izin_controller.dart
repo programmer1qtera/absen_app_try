@@ -1,4 +1,4 @@
-import 'package:absen_try_app/model/izin_model.dart';
+// import 'package:absen_try_app/model/izin_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 

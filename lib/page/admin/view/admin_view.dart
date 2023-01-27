@@ -76,6 +76,8 @@ class AdminView extends GetView<AdminController> {
                                 height: 10,
                               ),
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text('Aktivitas Alamat :'),
                                   SizedBox(

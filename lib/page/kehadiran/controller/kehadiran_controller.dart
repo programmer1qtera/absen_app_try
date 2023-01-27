@@ -203,6 +203,7 @@ class KehadiranController extends GetxController {
           pilihan == 'Masuk' ? 'in' : 'out': getDateHours,
           'range_keterlambatan': timeParsString,
           'address': addres,
+          'isProve': '',
           'image': urlImage,
           'status': pilihan
         });
@@ -214,6 +215,7 @@ class KehadiranController extends GetxController {
           'place': placeC.text,
           pilihan == 'Masuk' ? 'in' : 'out': getDateHours,
           'address': addres,
+          'isProve': '',
           'image': urlImage,
           'status': pilihan
         });
@@ -227,6 +229,7 @@ class KehadiranController extends GetxController {
         'place': placeC.text,
         pilihan == 'Masuk' ? 'in' : 'out': getDateHours,
         'address': addres,
+        'isProve': '',
         'image': urlImage,
         'status': pilihan
       });

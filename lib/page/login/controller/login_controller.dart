@@ -11,6 +11,10 @@ class LoginController extends GetxController {
   TextEditingController emailC = TextEditingController(text: 'user2@gmail.com');
   TextEditingController pwdC = TextEditingController(text: 'u123456');
 
+  // TextEditingController emailC =
+  //     TextEditingController(text: 'usertest@gmail.com');
+  // TextEditingController pwdC = TextEditingController(text: '123456');
+
   // TextEditingController emailC = TextEditingController(text: 'admin@gmail.com');
   // TextEditingController pwdC = TextEditingController(text: 'a123456');
 
