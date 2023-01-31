@@ -110,7 +110,7 @@ class CutiController extends GetxController {
     var collectionUser = await firestore.collection('user').doc(uid).get();
     // return UserModel.fromDoc(collectionUser);
     // var collectionKehadiran =
-    //     await firestore.collection('user').doc(uid).collection('cuti').get();
+    //     await firestore.collection(b'user').doc(uid).collection('cuti').get();
 
     // print(userCredential);
     int getRole = collectionUser.data()!['sisa_cuti'];

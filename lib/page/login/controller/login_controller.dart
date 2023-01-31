@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 class LoginController extends GetxController {
+  bool isLoading = false;
   TextEditingController emailC = TextEditingController(text: 'user2@gmail.com');
   TextEditingController pwdC = TextEditingController(text: 'u123456');
 
@@ -23,6 +24,8 @@ class LoginController extends GetxController {
 
   void userLogin() async {
     if (emailC.text.isNotEmpty || pwdC.text.isNotEmpty) {
+      isLoading = true;
+      update();
       try {
         UserCredential userCredential = await auth.signInWithEmailAndPassword(
             email: emailC.text, password: pwdC.text);
@@ -32,10 +35,12 @@ class LoginController extends GetxController {
         var getRole = collectionUser.data()!['role'];
 
         if (getRole == 'admin') {
-          Get.off(AdminView());
+          Get.off(const AdminView());
         } else {
           Get.off(HomeView());
         }
+        isLoading = false;
+        update();
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
           print('No user found for that email');
@@ -44,12 +49,18 @@ class LoginController extends GetxController {
           print('Wrong password provided for that user.');
           Get.snackbar('Password Salah', 'Password Salah.');
         }
+        isLoading = false;
+        update();
       } catch (e) {
         print(e);
+        isLoading = false;
+        update();
       }
     } else {
       print('Email password kosong');
       Get.snackbar('Error', 'Email password kosong');
+      isLoading = false;
+      update();
     }
   }
 }

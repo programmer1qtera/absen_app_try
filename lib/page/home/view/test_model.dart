@@ -11,8 +11,39 @@ class TestModel extends GetView<TestController> {
   Widget build(BuildContext context) {
     var controller = Get.put(TestController());
     return Scaffold(
-      body: Center(
-        child: Text('${controller.userMod?.name}'),
+      body: GetBuilder<TestController>(builder: (c) {
+        return Center(
+          child: c.isLoading == true
+              ? CircularProgressIndicator()
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text('${c.result.name}'),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text('${c.resultKehadiran[1].address}'),
+                    SizedBox(height: 10),
+                    ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: c.resultKehadiran.length,
+                      itemBuilder: (context, index) {
+                        var itemDataKehadiran = c.resultKehadiran[index];
+                        return c.isLoading == true
+                            ? CircularProgressIndicator()
+                            : Center(child: Text('${itemDataKehadiran.place}'));
+                      },
+                    )
+                  ],
+                ),
+        );
+      }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          controller.tryFakeGps();
+        },
       ),
     );
   }

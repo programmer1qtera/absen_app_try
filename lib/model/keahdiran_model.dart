@@ -1,5 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// class AllKehadiranModel {
+//   final List<KehadiranModel> dataKehadiran;
+//   AllKehadiranModel({required this.dataKehadiran});
+//   factory AllKehadiranModel.fromSnap(
+//       QuerySnapshot<Map<String, dynamic>> snapshot) {
+//     return AllKehadiranModel(
+//         dataKehadiran:
+//             snapshot.docs.map((e) => KehadiranModel.fromDoc(e)).toList());
+//   }
+// }
+
 class KehadiranModel {
   final String id;
   final String? date;
@@ -9,6 +20,7 @@ class KehadiranModel {
   final String? out;
   final String? isProve;
   final String? place;
+  final bool? isFakeGps;
   final String? lamaKeterlambatan;
   final String? statusKeterlambatan;
   final String? status;
@@ -21,6 +33,7 @@ class KehadiranModel {
       required this.inn,
       required this.out,
       required this.isProve,
+      required this.isFakeGps,
       required this.place,
       required this.lamaKeterlambatan,
       required this.statusKeterlambatan,
@@ -36,6 +49,7 @@ class KehadiranModel {
         image: snap['image'],
         inn: snap['in'],
         out: snap['out'],
+        isFakeGps: snap['isFakeGps'],
         isProve: snap['isProve'],
         place: snap['place'],
         lamaKeterlambatan: snap['range_keterlambatan'] != snap['']

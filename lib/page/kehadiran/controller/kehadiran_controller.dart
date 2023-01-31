@@ -10,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:trust_location/trust_location.dart';
 
 class KehadiranController extends GetxController {
   TextEditingController placeC = TextEditingController();
@@ -128,10 +129,11 @@ class KehadiranController extends GetxController {
         if (dataResponse['error'] != true) {
           isLoading = true;
           update();
+
           Position position = dataResponse['position'];
           List<Placemark> placemarks = await placemarkFromCoordinates(
               position.latitude, position.longitude);
-
+          bool isFakeGps = await TrustLocation.isMockLocation;
           String addres =
               '${placemarks[0].thoroughfare}, ${placemarks[0].subLocality}';
           await updatePosition(position, addres);
@@ -139,7 +141,7 @@ class KehadiranController extends GetxController {
           double jarak = Geolocator.distanceBetween(
               -6.1636573, 106.8922156, position.latitude, position.longitude);
           print(jarak);
-          await present(position, addres, jarak);
+          await present(isFakeGps, position, addres, jarak);
 
           print('last ${position.latitude},${position.longitude}');
           Get.snackbar('Berhasi Masuk', 'Anda berhasil absen Masuk');
@@ -158,12 +160,17 @@ class KehadiranController extends GetxController {
     }
   }
 
+  // Future<void> tryFakeGps() async {
+
+  //   print(isFakeGps);
+  //   update();
+  // }
   // Future<dynamic> uploadImageToStorage() async {
   //   String uid = await auth.currentUser!.uid;
   // }
 
   Future<dynamic> present(
-      Position position, String addres, double jaralk) async {
+      bool fakeGps, Position position, String addres, double jaralk) async {
     String uid = await auth.currentUser!.uid;
     CollectionReference<Map<String, dynamic>> colKehadiran =
         await firestore.collection('user').doc(uid).collection('kehadiran');
@@ -205,7 +212,8 @@ class KehadiranController extends GetxController {
           'address': addres,
           'isProve': '',
           'image': urlImage,
-          'status': pilihan
+          'status': pilihan,
+          'isFakeGps': fakeGps,
         });
       } else {
         await colKehadiran.doc().set({
@@ -217,7 +225,8 @@ class KehadiranController extends GetxController {
           'address': addres,
           'isProve': '',
           'image': urlImage,
-          'status': pilihan
+          'status': pilihan,
+          'isFakeGps': fakeGps,
         });
       }
       Get.snackbar('Berhasi Absen', 'Anda berhasil absen Masuk');
@@ -231,7 +240,8 @@ class KehadiranController extends GetxController {
         'address': addres,
         'isProve': '',
         'image': urlImage,
-        'status': pilihan
+        'status': pilihan,
+        'isFakeGps': fakeGps,
       });
       Get.snackbar('Berhasi Absen', 'Anda berhasil absen Keluar');
     }
@@ -335,7 +345,8 @@ class KehadiranController extends GetxController {
 
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
-    Position position = await Geolocator.getCurrentPosition();
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
     return {
       'position': position,
       'message': 'berhasil mendapatkan posisi',

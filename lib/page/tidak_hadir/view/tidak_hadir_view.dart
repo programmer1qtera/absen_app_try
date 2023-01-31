@@ -33,7 +33,7 @@ class TidakHadirView extends GetView<TidakHadirController> {
                                 : Colors.yellowAccent),
                   ),
                   PopupMenuButton(
-                    icon: Icon(Icons.arrow_drop_down),
+                    icon: const Icon(Icons.arrow_drop_down),
                     onSelected: (value) {
                       controller.isPilihan(value);
                     },

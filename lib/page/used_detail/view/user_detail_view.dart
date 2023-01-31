@@ -1,11 +1,6 @@
 import 'package:absen_try_app/model/izin_model.dart';
 import 'package:absen_try_app/model/keahdiran_model.dart';
 import 'package:absen_try_app/model/user_model.dart';
-import 'package:absen_try_app/page/home/controller/home_controller.dart';
-import 'package:absen_try_app/page/cuti/view/cuti_view.dart';
-import 'package:absen_try_app/page/kehadiran/view/kehadiran.dart';
-import 'package:absen_try_app/page/profile/view/profile_view.dart';
-import 'package:absen_try_app/page/sakit/view/sakit_page.dart';
 import 'package:absen_try_app/page/used_detail/controller/user_detail_controller.dart';
 import 'package:absen_try_app/page/used_detail/view/user_kehadiran_prove.dart';
 import 'package:absen_try_app/page/user_detail_izin/view/user_detail_izin.dart';
@@ -25,7 +20,7 @@ class UserDetail extends GetView<UserDetailController> {
     var controller = Get.put(UserDetailController());
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detail User'),
+        title: const Text('Detail User'),
         // leading: Container(),
       ),
       body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
@@ -341,6 +336,20 @@ class UserDetail extends GetView<UserDetailController> {
                                                         : SizedBox(
                                                             height: 5,
                                                           ),
+                                                    Text(
+                                                      kehadiranModel
+                                                                  .isFakeGps ==
+                                                              true
+                                                          ? 'Menggunakan Fake GPS'
+                                                          : 'Tidk menggunakan fake GPS',
+                                                      style: TextStyle(
+                                                          color: kehadiranModel
+                                                                      .isFakeGps ==
+                                                                  true
+                                                              ? Colors.redAccent
+                                                              : Colors
+                                                                  .greenAccent),
+                                                    ),
                                                     Row(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment.end,

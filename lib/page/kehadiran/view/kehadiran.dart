@@ -11,7 +11,7 @@ class KehadiranView extends GetView<KehadiranController> {
     var controller = Get.put(KehadiranController());
     controller.pilihan = null;
     controller.photo = null;
-    controller.placeC.text == null;
+    controller.placeC.text == '';
 
     return Scaffold(
         appBar: AppBar(

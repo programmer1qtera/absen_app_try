@@ -1,4 +1,3 @@
-import 'package:absen_try_app/page/cuti/view/cuti_view.dart';
 import 'package:get/get.dart';
 
 class TidakHadirController extends GetxController {

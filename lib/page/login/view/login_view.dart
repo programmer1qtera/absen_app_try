@@ -1,7 +1,5 @@
 import 'package:absen_try_app/page/login/controller/login_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:get/get.dart';
 
 class LoginView extends GetView<LoginController> {
@@ -34,11 +32,23 @@ class LoginView extends GetView<LoginController> {
           SizedBox(
             height: 30,
           ),
-          ElevatedButton(
-              onPressed: () {
-                controller.userLogin();
-              },
-              child: Text('Login'))
+          GetBuilder<LoginController>(builder: (c) {
+            return ElevatedButton(
+                onPressed: () {
+                  if (c.isLoading == false) {
+                    controller.userLogin();
+                  } else {
+                    Get.snackbar('Tunggu', 'Sedang proses login');
+                  }
+                },
+                child: c.isLoading == true
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text('Login'));
+          })
         ],
       ),
     );

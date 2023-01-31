@@ -65,13 +65,13 @@ class SakitController extends GetxController {
 
   void getCalender(context) async {
     var date = DateTime.now();
-    final birthday = DateTime(date.year, date.month, date.day - 2);
+    final rangeDate = DateTime(date.year, date.month, date.day - 2);
 
     DateTime? getNewDate = await showDatePicker(
         helpText: 'Qtera Calender ',
         context: context,
         initialDate: DateTime.now(),
-        firstDate: birthday,
+        firstDate: rangeDate,
         lastDate: DateTime.now());
 
     if (getNewDate != null) {

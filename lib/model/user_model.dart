@@ -17,14 +17,14 @@ class UserModel {
       required this.name});
 
   factory UserModel.fromDoc(DocumentSnapshot<Map<String, dynamic>> snapshot) {
-    final snap = snapshot.data()!;
+    // final snap = snapshot.data()!;
     return UserModel(
         id: snapshot.id,
-        address: snap["address"],
-        name: snap['name'],
-        email: snap["email"],
-        sisaCuti: snap['sisa_cuti'],
-        nip: snap['nip']);
+        address: snapshot["address"],
+        name: snapshot['name'],
+        email: snapshot["email"],
+        sisaCuti: snapshot['sisa_cuti'],
+        nip: snapshot['nip']);
   }
 
   // Map<String, dynamic> toJson() => {

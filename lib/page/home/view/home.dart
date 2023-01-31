@@ -22,7 +22,6 @@ class HomeView extends GetView<HomeController> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Home'),
-        leading: Container(),
         actions: [
           IconButton(
               onPressed: () {
@@ -284,7 +283,22 @@ class HomeView extends GetView<HomeController> {
                                                                     .status ==
                                                                 'Masuk'
                                                             ? 'in : ${kehadiranModel.inn}'
-                                                            : 'out : ${kehadiranModel.out}')
+                                                            : 'out : ${kehadiranModel.out}'),
+                                                        Text(
+                                                          kehadiranModel
+                                                                      .isFakeGps ==
+                                                                  true
+                                                              ? 'Menggunakan Fake GPS'
+                                                              : 'Tidk menggunakan fake GPS',
+                                                          style: TextStyle(
+                                                              color: kehadiranModel
+                                                                          .isFakeGps ==
+                                                                      true
+                                                                  ? Colors
+                                                                      .redAccent
+                                                                  : Colors
+                                                                      .greenAccent),
+                                                        ),
                                                       ],
                                                     ),
                                                   ),
@@ -424,6 +438,21 @@ class HomeView extends GetView<HomeController> {
                                                             : SizedBox(
                                                                 height: 5,
                                                               ),
+                                                        Text(
+                                                          kehadiranModel
+                                                                      .isFakeGps ==
+                                                                  true
+                                                              ? 'Menggunakan Fake GPS'
+                                                              : 'Tidk menggunakan fake GPS',
+                                                          style: TextStyle(
+                                                              color: kehadiranModel
+                                                                          .isFakeGps ==
+                                                                      true
+                                                                  ? Colors
+                                                                      .redAccent
+                                                                  : Colors
+                                                                      .greenAccent),
+                                                        ),
                                                         Row(
                                                           mainAxisAlignment:
                                                               MainAxisAlignment
@@ -679,6 +708,7 @@ class HomeView extends GetView<HomeController> {
                                           height: 10,
                                         ),
                                         Text('${dataIzin['description']}'),
+
                                         Row(
                                           children: [
                                             Icon(Icons.file_present),
