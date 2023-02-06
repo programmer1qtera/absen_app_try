@@ -5,7 +5,9 @@ class UserModel {
   final String? nip;
   final String? address;
   final String? email;
+  final String? role;
   final String? name;
+  final bool? notif;
   final int? sisaCuti;
 
   UserModel(
@@ -13,6 +15,8 @@ class UserModel {
       required this.nip,
       required this.sisaCuti,
       required this.address,
+      required this.role,
+      required this.notif,
       required this.email,
       required this.name});
 
@@ -23,6 +27,8 @@ class UserModel {
         address: snapshot["address"],
         name: snapshot['name'],
         email: snapshot["email"],
+        role: snapshot["role"],
+        notif: snapshot["notif"],
         sisaCuti: snapshot['sisa_cuti'],
         nip: snapshot['nip']);
   }

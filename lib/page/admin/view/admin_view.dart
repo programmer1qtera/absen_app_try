@@ -1,4 +1,5 @@
 import 'package:absen_try_app/model/user_model.dart';
+import 'package:absen_try_app/page/edit_role_user/view/edit_role_user.dart';
 import 'package:absen_try_app/page/used_detail/view/user_detail_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ class AdminView extends GetView<AdminController> {
     var controller = Get.put(AdminController());
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin'),
+        title: Text('Admin '),
         actions: [
           IconButton(
               onPressed: () {
@@ -65,7 +66,22 @@ class AdminView extends GetView<AdminController> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('${userAllMod.name}'),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('${userAllMod.name}'),
+                                  userAllMod.notif == true
+                                      ? CircleAvatar(
+                                          backgroundColor: Colors.white,
+                                          maxRadius: 20,
+                                          child: Text('New'),
+                                        )
+                                      : SizedBox(
+                                          width: 5,
+                                        )
+                                ],
+                              ),
                               Text(
                                 '${userAllMod.nip}',
                                 style: TextStyle(
@@ -91,10 +107,20 @@ class AdminView extends GetView<AdminController> {
                                 ],
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Get.to(EditRoleUserView(
+                                        userModel: userAllMod,
+                                      ));
+                                    },
+                                    child: Text('Edit Role'),
+                                  ),
                                   TextButton(
                                       onPressed: () {
+                                        controller.updeateNotif(userAllMod.id);
                                         Get.to(UserDetail(
                                             userDetailMod: userAllMod));
                                       },

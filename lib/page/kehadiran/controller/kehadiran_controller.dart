@@ -19,6 +19,7 @@ class KehadiranController extends GetxController {
   XFile? photo;
   final storage = s.FirebaseStorage.instance;
   var finalImage;
+  bool? isFakeGps;
   FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -52,40 +53,53 @@ class KehadiranController extends GetxController {
 
   void picImage() async {
     Map<String, dynamic> dataResponse = await determinePosition();
+    isFakeGps = await TrustLocation.isMockLocation;
+    print('nilai fake gps di PickImage: $isFakeGps');
 
     // Map<String, dynamic> dataResponse = await determinePosition();
 
     if (dataResponse['error'] != true) {
       cameraLoad = true;
       update();
-      Position position = dataResponse['position'];
-      List<Placemark> placemarks =
-          await placemarkFromCoordinates(position.latitude, position.longitude);
+      try {
+        Position position = dataResponse['position'];
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+            position.latitude, position.longitude);
 
-      print(placemarks);
+        print(placemarks);
 
-      String addres =
-          '${placemarks[0].street},${placemarks[0].thoroughfare}, ${placemarks[0].subLocality}';
-      print(addres);
-      photo =
-          await _picker.pickImage(imageQuality: 50, source: ImageSource.camera);
-      if (photo != null) {
-        var decodeImg = img.decodeImage(File(photo!.path).readAsBytesSync());
+        String addres =
+            '${placemarks[0].street},${placemarks[0].thoroughfare}, ${placemarks[0].subLocality}';
         print(addres);
-        img.drawString(
-          decodeImg!,
-          addres,
-          font: img.arial48,
-        );
+        photo = await _picker.pickImage(
+            imageQuality: 50, source: ImageSource.camera);
+        // var logFile = File(photo!.path);
+        // var sink = logFile.openWrite().write('$addres');
+        
 
-        var encodeImage = img.encodeJpg(decodeImg);
 
-        finalImage = File(photo!.path)..writeAsBytesSync(encodeImage);
-      } else {
-        cameraLoad = false;
-        update();
-        Get.snackbar('Image erorr', 'Terjadi Kesalahan');
+        if (photo != null) {
+          var decodeImg = img.decodeImage(File(photo!.path).readAsBytesSync());
+          print(addres);
+          img.drawString(
+            decodeImg!,
+            addres,
+            font: img.arial48,
+          );
+
+          var encodeImage = img.encodeJpg(decodeImg);
+
+          finalImage = File(photo!.path)..writeAsBytesSync(encodeImage);
+        } else {
+          cameraLoad = false;
+          update();
+          Get.snackbar('Image erorr', 'Terjadi Kesalahan');
+        }
+      } catch (e) {
+        print(e);
+        throw Exception(e);
       }
+
       cameraLoad = false;
       update();
     } else {
@@ -120,6 +134,9 @@ class KehadiranController extends GetxController {
     update();
     Map<String, dynamic> dataResponse = await determinePosition();
 
+    isFakeGps = await TrustLocation.isMockLocation;
+    print('nilai fake gps di Absen: $isFakeGps');
+
     if (pilihan == null) {
       isLoading = false;
       update();
@@ -129,22 +146,26 @@ class KehadiranController extends GetxController {
         if (dataResponse['error'] != true) {
           isLoading = true;
           update();
+          try {
+            Position position = dataResponse['position'];
+            List<Placemark> placemarks = await placemarkFromCoordinates(
+                position.latitude, position.longitude);
+            update();
+            String addres =
+                '${placemarks[1].street!.length > 7 ? placemarks[1].street : placemarks[0].street}, ${placemarks[0].subLocality},${placemarks[0].locality}.${placemarks[0].subAdministrativeArea}, ${placemarks[0].country}';
+            await updatePosition(position, addres);
+            print('$addres');
+            double jarak = Geolocator.distanceBetween(
+                -6.1636573, 106.8922156, position.latitude, position.longitude);
+            print(jarak);
+            await present(isFakeGps!, position, addres, jarak);
 
-          Position position = dataResponse['position'];
-          List<Placemark> placemarks = await placemarkFromCoordinates(
-              position.latitude, position.longitude);
-          bool isFakeGps = await TrustLocation.isMockLocation;
-          String addres =
-              '${placemarks[0].thoroughfare}, ${placemarks[0].subLocality}';
-          await updatePosition(position, addres);
-          print('$addres');
-          double jarak = Geolocator.distanceBetween(
-              -6.1636573, 106.8922156, position.latitude, position.longitude);
-          print(jarak);
-          await present(isFakeGps, position, addres, jarak);
-
-          print('last ${position.latitude},${position.longitude}');
-          Get.snackbar('Berhasi Masuk', 'Anda berhasil absen Masuk');
+            print('last ${position.latitude},${position.longitude}');
+            Get.snackbar('Berhasi Masuk', 'Anda berhasil absen Masuk');
+          } catch (e) {
+            print(e);
+            throw Exception(e);
+          }
         } else {
           Get.snackbar('Eror', dataResponse['message']);
           isLoading = false;
@@ -161,7 +182,7 @@ class KehadiranController extends GetxController {
   }
 
   // Future<void> tryFakeGps() async {
-
+  //   bool isFakeGps = await TrustLocation.isMockLocation;
   //   print(isFakeGps);
   //   update();
   // }
@@ -201,48 +222,64 @@ class KehadiranController extends GetxController {
             now.hour > 08 ? now.hour - 08 : 08 - now.hour,
             now.minute > 30 ? now.minute - 30 : 30 - now.minute);
         String timeParsString = DateFormat.Hm().format(rangeTime);
-        await colKehadiran.doc().set({
-          'date': now.toIso8601String(),
-          'lat': position.latitude,
-          'long': position.longitude,
-          'place': placeC.text,
-          'satus_keterlambatan': 'Terlambat',
-          pilihan == 'Masuk' ? 'in' : 'out': getDateHours,
-          'range_keterlambatan': timeParsString,
-          'address': addres,
-          'isProve': '',
-          'image': urlImage,
-          'status': pilihan,
-          'isFakeGps': fakeGps,
-        });
+        try {
+          await colKehadiran.doc().set({
+            'date': now.toIso8601String(),
+            'lat': position.latitude,
+            'long': position.longitude,
+            'place': placeC.text,
+            'satus_keterlambatan': 'Terlambat',
+            pilihan == 'Masuk' ? 'in' : 'out': getDateHours,
+            'range_keterlambatan': timeParsString,
+            'address': addres,
+            'isProve': '',
+            'image': urlImage,
+            'status': pilihan,
+            'isFakeGps': fakeGps,
+          });
+        } catch (e) {
+          print(e);
+          throw Exception(e);
+        }
       } else {
-        await colKehadiran.doc().set({
-          'date': now.toIso8601String(),
-          'lat': position.latitude,
-          'long': position.longitude,
-          'place': placeC.text,
-          pilihan == 'Masuk' ? 'in' : 'out': getDateHours,
-          'address': addres,
-          'isProve': '',
-          'image': urlImage,
-          'status': pilihan,
-          'isFakeGps': fakeGps,
-        });
+        try {
+          await colKehadiran.doc().set({
+            'date': now.toIso8601String(),
+            'lat': position.latitude,
+            'long': position.longitude,
+            'place': placeC.text,
+            pilihan == 'Masuk' ? 'in' : 'out': getDateHours,
+            'address': addres,
+            'isProve': '',
+            'image': urlImage,
+            'status': pilihan,
+            'isFakeGps': fakeGps,
+          });
+        } catch (e) {
+          print(e);
+          throw Exception(e);
+        }
       }
       Get.snackbar('Berhasi Absen', 'Anda berhasil absen Masuk');
     } else {
-      await colKehadiran.doc().set({
-        'date': now.toIso8601String(),
-        'lat': position.latitude,
-        'long': position.longitude,
-        'place': placeC.text,
-        pilihan == 'Masuk' ? 'in' : 'out': getDateHours,
-        'address': addres,
-        'isProve': '',
-        'image': urlImage,
-        'status': pilihan,
-        'isFakeGps': fakeGps,
-      });
+      try {
+        await colKehadiran.doc().set({
+          'date': now.toIso8601String(),
+          'lat': position.latitude,
+          'long': position.longitude,
+          'place': placeC.text,
+          pilihan == 'Masuk' ? 'in' : 'out': getDateHours,
+          'address': addres,
+          'isProve': '',
+          'image': urlImage,
+          'status': pilihan,
+          'isFakeGps': fakeGps,
+        });
+      } catch (e) {
+        print(e);
+        throw Exception(e);
+      }
+
       Get.snackbar('Berhasi Absen', 'Anda berhasil absen Keluar');
     }
 
@@ -361,6 +398,7 @@ class KehadiranController extends GetxController {
         'lat': position.latitude,
         'long': position.longitude,
       },
+      'notif': true,
       'address': addres
     });
   }

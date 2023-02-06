@@ -50,6 +50,7 @@ class HomeView extends GetView<HomeController> {
                 child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -289,7 +290,7 @@ class HomeView extends GetView<HomeController> {
                                                                       .isFakeGps ==
                                                                   true
                                                               ? 'Menggunakan Fake GPS'
-                                                              : 'Tidk menggunakan fake GPS',
+                                                              : 'Tidak menggunakan fake GPS',
                                                           style: TextStyle(
                                                               color: kehadiranModel
                                                                           .isFakeGps ==
@@ -443,7 +444,7 @@ class HomeView extends GetView<HomeController> {
                                                                       .isFakeGps ==
                                                                   true
                                                               ? 'Menggunakan Fake GPS'
-                                                              : 'Tidk menggunakan fake GPS',
+                                                              : 'Tidak menggunakan fake GPS',
                                                           style: TextStyle(
                                                               color: kehadiranModel
                                                                           .isFakeGps ==

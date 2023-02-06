@@ -9,8 +9,8 @@ import 'package:get/get.dart';
 
 class LoginController extends GetxController {
   bool isLoading = false;
-  TextEditingController emailC = TextEditingController(text: 'user2@gmail.com');
-  TextEditingController pwdC = TextEditingController(text: 'u123456');
+  // TextEditingController emailC = TextEditingController(text: 'user2@gmail.com');
+  // TextEditingController pwdC = TextEditingController(text: 'u123456');
 
   // TextEditingController emailC =
   //     TextEditingController(text: 'usertest@gmail.com');
@@ -18,6 +18,9 @@ class LoginController extends GetxController {
 
   // TextEditingController emailC = TextEditingController(text: 'admin@gmail.com');
   // TextEditingController pwdC = TextEditingController(text: 'a123456');
+
+  TextEditingController emailC = TextEditingController();
+  TextEditingController pwdC = TextEditingController();
 
   FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;

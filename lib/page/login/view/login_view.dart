@@ -1,3 +1,4 @@
+import 'package:absen_try_app/page/create_user/view/create_user_view.dart';
 import 'package:absen_try_app/page/login/controller/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -48,7 +49,13 @@ class LoginView extends GetView<LoginController> {
                         ),
                       )
                     : Text('Login'));
-          })
+          }),
+          SizedBox(
+            height: 10,
+          ),
+          TextButton(
+              onPressed: () => Get.to(CreateUserView()),
+              child: Text('Not Have Acount ?'))
         ],
       ),
     );

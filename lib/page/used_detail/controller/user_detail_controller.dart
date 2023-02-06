@@ -2,11 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
+import '../../../model/user_model.dart';
+import '../../../services/user_services.dart';
+
 // import 'package:intl/intl.dart';
 
 class UserDetailController extends GetxController {
   FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  late UserModel userMod;
+  UserModel get result => userMod;
+
   bool isKehadiran = false;
   bool isAprove = false;
   int? selectIndex;
@@ -27,6 +34,12 @@ class UserDetailController extends GetxController {
         .doc(kehadiranId)
         .update({'isProve': 'Proved'});
     Get.back();
+  }
+
+  void updeateNotif(String id) async {
+    await firestore.collection('user').doc(id).update({
+      'notif': false,
+    });
   }
 
   Future<void> notAproved(String userId, String kehadiranId) async {
