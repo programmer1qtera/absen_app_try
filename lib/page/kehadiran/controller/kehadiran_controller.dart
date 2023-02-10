@@ -67,6 +67,8 @@ class KehadiranController extends GetxController {
             position.latitude, position.longitude);
 
         print(placemarks);
+        
+        print('nilai isMock from geoloc${position.isMocked}');
 
         String addres =
             '${placemarks[0].street},${placemarks[0].thoroughfare}, ${placemarks[0].subLocality}';
@@ -75,8 +77,6 @@ class KehadiranController extends GetxController {
             imageQuality: 50, source: ImageSource.camera);
         // var logFile = File(photo!.path);
         // var sink = logFile.openWrite().write('$addres');
-        
-
 
         if (photo != null) {
           var decodeImg = img.decodeImage(File(photo!.path).readAsBytesSync());

@@ -21,6 +21,10 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
         title: 'Absen Try App',
         theme: ThemeData(
+          // textTheme: TextTheme(
+
+          // ),
+          // fontFamily: ,
           brightness: Brightness.dark,
           primarySwatch: Colors.blue,
         ),
