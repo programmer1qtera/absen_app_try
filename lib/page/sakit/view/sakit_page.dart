@@ -41,7 +41,7 @@ class SakitView extends GetView<SakitController> {
             SizedBox(
               height: 10,
             ),
-            Text('Surat Sakit', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('Surat Sakitt', style: TextStyle(fontWeight: FontWeight.bold)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
